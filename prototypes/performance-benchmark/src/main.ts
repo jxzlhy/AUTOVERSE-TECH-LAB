@@ -244,7 +244,12 @@ const builders: Record<ScenarioId, () => Promise<void> | void> = {
     const w = addWorld();
     const hi = new THREE.Mesh(
       new THREE.TorusKnotGeometry(1.6, 0.5, 512, 96),
-      new THREE.MeshPhysicalMaterial({ color: PAINT_PRESETS[0].color, metalness: 0.9, roughness: 0.25, clearcoat: 1 }),
+      new THREE.MeshPhysicalMaterial({
+        color: PAINT_PRESETS[0].color,
+        metalness: 0.9,
+        roughness: 0.25,
+        clearcoat: 1,
+      }),
     );
     hi.position.y = 2.4;
     w.add(hi);
@@ -281,7 +286,10 @@ const builders: Record<ScenarioId, () => Promise<void> | void> = {
       }
       const tex = new THREE.CanvasTexture(cv);
       tex.anisotropy = 4;
-      const m = new THREE.Mesh(new THREE.PlaneGeometry(14, 14), new THREE.MeshStandardMaterial({ map: tex }));
+      const m = new THREE.Mesh(
+        new THREE.PlaneGeometry(14, 14),
+        new THREE.MeshStandardMaterial({ map: tex }),
+      );
       m.position.set(k * 16 - 8, 0.02 + k * 0.01, 0);
       m.rotation.x = -Math.PI / 2;
       w.add(m);
@@ -356,7 +364,9 @@ function buildResult(): BenchmarkResult {
     jsMemoryMB: jsMemoryMB(),
     gpuMemoryMB: "NOT_MEASURABLE",
     sceneSwitchAvgMs: multiScene.switchMs.length
-      ? Number((multiScene.switchMs.reduce((a, b) => a + b, 0) / multiScene.switchMs.length).toFixed(2))
+      ? Number(
+          (multiScene.switchMs.reduce((a, b) => a + b, 0) / multiScene.switchMs.length).toFixed(2),
+        )
       : null,
     environment: {
       userAgent: navigator.userAgent,
