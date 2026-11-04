@@ -9,7 +9,7 @@
 
 | 项 | 值 |
 | --- | --- |
-| 当前阶段 | **EVOLUTION PHASE 2 五轮完成**（+ 三视觉方向研究/IDENTITY v0 + Scroll Narrative + CORE UI v0.3 六件 + Blender R 级研究 + DeLorean 骨架 :5178） |
+| 当前阶段 | **EVOLUTION PHASE 2 六轮完成**（+ Engineering Lab 独立页 :5179：零件树/检查器/结构说明实测） |
 | 新增包 | packages/motion-system（TimelineManager：单一所有权/可取消/自动清理/Reduced Motion；6 单测） |
 | 新增原型 | prototypes/shader-lab（:5177，全十 Shader 可选 Demo + 参数滑杆） |
 | 五 Motion Demo | 登场（新）/电影级聚焦（新，Box3 取景+cinematic）/拆解/复原/场景传送（全部改走 TimelineManager） |
@@ -32,7 +32,7 @@
 
 1. **真实浏览器基准执行**：harness 已就绪（:5176?scenario=X&autostart=1），需用户日常浏览器跑 A/B/D/G/H/J 并导出 JSON（IAB/headless 读数不可信——D5）
 2. **CI E2E 首跑确认**：push 已触发 ci.yml；**本机 api.github.com 受网络策略拦截无法代查，需项目所有者在 GitHub 网页 Actions 页确认 quality+e2e 两 job 绿**（唯一待用户动作）
-3. **PHASE 2G/2H**：Engineering Lab 深化（Section Control 已接入旗舰；剩余：机械动画/结构说明面板）+ DeLorean 专题页（真实 DMC-12 vs 影视改装区分展示；模型来源待寻，CC-BY-NC 禁入）。已落地：AvPartsTree/AvToggle/AvSceneSelector/AvHoloPanel + XRay/Section 控制器（旗舰实测通过，2026-11-05）
+3. **PHASE 2G/2H 剩余**：Engineering Lab 已独立成页（:5179，2026-11-05 实测：树/检查器/结构说明；X-RAY/爆炸交互组件链路同旗舰已验证）；DeLorean 资产寻址（S/A 级模型，CC-BY-NC 禁入）
 4. **PHASE 2D/2E 剩余**：材质预设接入旗舰车漆切换 UI + 三视觉方向研究（AUTOMOTIVE LUXURY/FUTURISTIC SPATIAL/EDITORIAL MUSEUM）+ CORE UI 缺项（Dropdown/Tooltip/Drawer/Search/Select/Navigation）
 5. **PHASE 2E 深化**：render-target 着色器转场 + 5 个完整 Motion Demo（登场/拆解/复原/传送/聚焦）
 6. **PHASE 2F**：Blender 自动化研究 + poly.pizza/Quaternius CC0 车模铺量（质量分级 S/A/B/C 实践）

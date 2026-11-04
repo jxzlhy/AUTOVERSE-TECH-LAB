@@ -2,6 +2,15 @@
 
 本仓库遵循阶段化推进；每阶段在 docs/09-handoff/ 留交接报告。
 
+## [Evolution-2 五轮] 2026-11-05 — Engineering Lab 独立体验页
+### Added
+- **prototypes/engineering-lab（:5179）**：PART 9.2 独立体验——零件树（AvPartsTree）/部件聚焦/爆炸拆解+装配复原/X-RAY/WIRE/SECTION/结构说明（每部件工程描述）/轮转动画；复用 three-runtime XRay/Section/WireframeHandle + design-system ENGINEERING 组件
+### Verified
+- 浏览器实测：10 部件树→选中→检查器（confirmed/estimated）→结构说明全链路；11 DRAWS / 0.8K TRIS / GPU NOT MEASURABLE 标注
+### Fixed
+- 5179 端口被游离 preview 进程占用（旧 Playground 实例）——lsof 定位终止重启
+- 实验室 .vue 同样需要 shims-vue（与 F1 同根因）
+
 ## [Evolution-2 四轮] 2026-11-05 — 三视觉方向 + Scroll Narrative
 ### Added
 - **三视觉方向研究 + AUTOVERSE VISUAL IDENTITY v0**（docs/04-design-system/visual-directions.md）：AUTOMOTIVE LUXURY / FUTURISTIC SPATIAL / EDITORIAL MUSEUM 设计规则 + 融合配方（场景决定语法：摄影棚=LUXURY、能量空间=SPATIAL、知识页=MUSEUM）+ Token 映射与"CORE UI 禁用 backdrop-blur"边界规则
