@@ -1,0 +1,34 @@
+/* AUTOVERSE Design Tokens — CSS 侧映射（值必须与 @atl/shared tokens.ts 一致） */
+:root {
+  --av-bg-void: #05070d;
+  --av-bg-deep: #0a0f1a;
+  --av-bg-elevated: #111827;
+  --av-border-faint: rgba(148, 163, 184, 0.12);
+  --av-border-strong: rgba(148, 163, 184, 0.28);
+  --av-text-primary: #f1f5f9;
+  --av-text-secondary: #94a3b8;
+  --av-text-muted: #64748b;
+  --av-nexus-300: #67e8f9;
+  --av-nexus-500: #22d3ee;
+  --av-nexus-700: #0e7490;
+  --av-exhibit-real: #f59e0b;
+  --av-exhibit-fiction: #a78bfa;
+  --av-exhibit-concept: #34d399;
+  --av-success: #10b981;
+  --av-warning: #fbbf24;
+  --av-danger: #f87171;
+  --av-info: #38bdf8;
+  --av-radius-s: 4px;
+  --av-radius-m: 8px;
+  --av-radius-l: 16px;
+  --av-radius-full: 999px;
+  --av-motion-instant: 80ms;
+  --av-motion-fast: 160ms;
+  --av-motion-normal: 280ms;
+  --av-motion-slow: 480ms;
+  --av-ease-ui: cubic-bezier(0.22, 1, 0.36, 1);
+  --av-glass-bg: rgba(10, 15, 26, 0.55);
+  --av-glass-blur: blur(16px) saturate(1.2);
+  --av-font-body: system-ui, -apple-system, "PingFang SC", "Noto Sans SC", sans-serif;
+  --av-font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+}
