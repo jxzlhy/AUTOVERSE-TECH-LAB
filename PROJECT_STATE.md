@@ -5,15 +5,14 @@
 
 ---
 
-## 当前快照（更新于 2026-11-05 通宵自主进化）
+## 当前快照（更新于 2026-11-05 EVOLUTION PHASE 2）
 
 | 项 | 值 |
 | --- | --- |
-| 当前阶段 | **MASTER PLAN 通宵自主进化已完成本轮**（总指令 V1.0） |
-| 上一里程碑 | Phase 1 基础建设（2026-11-05）→ 本轮：packages 体系 + 旗舰原型 + 设计系统 |
-| 最新 Commit | 见 git log（本轮最终 SHA 在演进报告 A 节） |
+| 当前阶段 | **EVOLUTION PHASE 2 首轮完成**（Runtime 稳定性/CI/基准/2D2E 切片） |
+| 承接 Commit | 01e0677 → 本轮最终 SHA 见 docs/09-handoff/EVOLUTION_PHASE_2_REPORT.md |
 | 分支 | main（已推送） |
-| 执行模式 | 本轮结束；下轮从"未完成"继续 |
+| 门禁状态 | lint 0 ｜ typecheck 0 ｜ vitest 19/19 ｜ 六应用 build 全绿 ｜ CI 已配置（push 触发） |
 
 ## 已完成（通宵进化轮，全部浏览器实测）
 
@@ -25,15 +24,15 @@
 6. **旗舰原型 automotive-studio**（5aea09e）：双场景 SceneManager + GSAP 转场 + GLB 真实加载（3mesh/3mat/8tex/25.8K tris 上屏）+ 零件拾取 + 爆炸拆解（截图验证）+ 5 灯光预设 + 4 车漆 + Bloom + Hologram shader + 粒子 + 性能 HUD（能量空间实测 32FPS）
 7. **packages/design-system（CORE UI v0）** + design-playground（2498d38）：Button/Input/Card/Badge/Modal，色板/状态矩阵/对话框（遮罩+Esc）浏览器验收
 
-## 未完成（下一轮候选，按价值排序）
+## 未完成（PHASE 2 下一轮候选，按 MASTER PLAN PART 14 优先级）
 
-1. **真实浏览器性能基准**（framework-comparison F4 遗留）：三路线 FPS 复测 + performance-benchmark 原型（Draco/KTX2 压缩对比）
-2. **Playwright E2E 门禁**：页面冒烟（canvas 存在/HUD 文案/无 console error）+ CI 接入
-3. **gsap-motion 原型**：render-target 着色器转场（当前为遮罩+镜头转场）
-4. **SPATIAL UI / ENGINEERING UI 组件**（design-system v0 只有 CORE UI 线）
-5. **更多 GLB 资产**：poly.pizza/Quaternius CC0 车模铺量 + 质量分级实践
-6. **X-Ray/Dissolve 等 shader 试点扩充**（本轮完成 Hologram）
-7. **Vue 线类型门禁**：试 TS5.9 组合恢复 vue-tsc
+1. **真实浏览器基准执行**：harness 已就绪（:5176?scenario=X&autostart=1），需用户日常浏览器跑 A/B/D/G/H/J 并导出 JSON（IAB/headless 读数不可信——D5）
+2. **CI E2E 首跑确认**：push 已触发 ci.yml，需在 GitHub Actions 页确认 quality+e2e 两 job 绿
+3. **PHASE 2G/2H**：Engineering Lab（零件树/X-Ray 接线/工程面板）+ DeLorean 专题页（真实 DMC-12 vs 影视改装区分展示；模型来源待寻，CC-BY-NC 禁入）
+4. **PHASE 2D 深化**：SPATIAL UI / ENGINEERING UI 组件线 + 三视觉方向研究（AUTOMOTIVE LUXURY/FUTURISTIC SPATIAL/EDITORIAL MUSEUM）
+5. **PHASE 2E 深化**：render-target 着色器转场 + 5 个完整 Motion Demo（登场/拆解/复原/传送/聚焦）
+6. **PHASE 2F**：Blender 自动化研究 + poly.pizza/Quaternius CC0 车模铺量（质量分级 S/A/B/C 实践）
+7. **Vue 线类型门禁**：vue-tsc × TS7 仍不兼容（DL-006 side-by-side 不覆盖 vue-tsc）
 
 ## 技术债（更新）
 

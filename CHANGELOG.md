@@ -2,6 +2,35 @@
 
 本仓库遵循阶段化推进；每阶段在 docs/09-handoff/ 留交接报告。
 
+## [Evolution-2] 2026-11-05 — 工程强化与视觉进化（PHASE 2 首轮）
+
+### Fixed（Runtime 稳定性，全部有测试佐证）
+
+- **SceneManager 两阶段激活**：目标场景 prepare 失败时保留当前场景（修复"切场景失败=白屏"）；generation 计数防陈旧异步提交；cancelPending()
+- **AssetManager 解码器门控**：Draco/KTX2/Meshopt 初始化串行化，修复"压缩模型在解码器未就绪时开始加载"竞态
+- **computeGlbStats 索引几何修复**：triangles 按 index.count（原 position.count/3 对 ToyCar 偏差 4 倍以上）
+- **ResourceDisposer 扩展**：SkinnedMesh 骨骼纹理 + InstancedMesh.dispose + ResourceLedger 引用账本 + disposeRenderTarget + createListenerTracker
+- **App 生命周期**：unhandledrejection/contextlost/restored 命名监听器反注册 + gsap.killTweensOf
+
+### Added
+
+- **CI**：.github/workflows/ci.yml（quality job：lint→typecheck→test→build；e2e job：CI 内装 Chromium 跑冒烟）
+- **E2E**：Playwright 三套件（Playground 组件+Modal Esc / vue-three 布局回归哨兵 / 旗舰 GLB+双场景切换+控制台零错误）
+- **性能基准 harness**：prototypes/performance-benchmark 六场景（A 单车/B 实例化铺量/D 大量 Mesh/G 100k 粒子/H Bloom/J 长跑），avg/P95 帧时，GPU 显存如实标记 NOT_MEASURABLE，SwiftShader 嫌疑自动标记
+- **Shader Library v2**（packages/three-runtime/src/shader-library.ts）：X-Ray / Dissolve（噪声消融）/ Energy Flow，统一 Handle（tick/dispose）生命周期
+- **CORE UI v0.1**：AvTabs（WAI-ARIA roving tabindex）+ AvToast（role=status）；Playground 增补演示
+
+### Verified
+
+- **19/19 单测**（新增 8 项 PHASE 2A 边界：失败保当前场景/两阶段时序/并发拒绝/取消回滚/账本归零/监听器反注册/索引几何/超发抛错）
+- **lint 0 / typecheck 0 / 六应用 build 全绿**；基准 harness 端到端实测（A 场景 RESULT 面板 + JSON 输出）
+
+### Findings（F11–F13）
+
+- F11 本机网络策略拦截 Playwright CDN → E2E 执行环境定为 CI（DL-007）
+- F12 typescript-eslint 8.72 拒绝 TS7 → 根 TS6.0.3 side-by-side（DL-006）
+- F13 three 的 BufferGeometry.dispose() 只发 GPU 释放事件、不清 CPU attributes（测试断言需 spy dispose 调用）
+
 ## [Evolution-1] 2026-11-05 — 通宵自主进化（MASTER PLAN V1.0 首轮）
 
 ### Added

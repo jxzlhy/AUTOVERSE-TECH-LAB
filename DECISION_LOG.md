@@ -48,3 +48,21 @@
 - **理由**：单应用内双场景已覆盖转场/加载/释放/状态恢复的验证点，成本远低于两个完整空间。
 - **风险**：双场景在同一 Canvas 内实现，与未来"每空间一 Canvas"方案有差异 → 转场接口按可替换设计。**回滚**：原型独立，不影响 packages。
 - **日期**：2026-11-05
+
+## DL-006 TypeScript 采用 6/7 双版本 side-by-side
+
+- **决策**：根目录 typescript@6.0.3（供 eslint/typescript-eslint 8.72 与根 typecheck），各应用包保留 typescript@7.0.2（原生编译器 tsc 门禁）。
+- **背景**：F12——根安装 TS7 后 typescript-eslint 直接拒绝运行（8.72 明确不支持 TS7.0 API）；TS 官方博客给出 6/7 side-by-side 方案。
+- **备选**：(a) 全降 TS6（放弃 TS7 提速）；(b) 等 typescript-eslint 支持 TS7（阻塞 lint）。
+- **理由**：lint 门禁不能停；TS6 tsc 对本代码库正确性等价；包内 TS7 门禁继续生效。
+- **风险**：双版本语义差异需关注（当前无 TS7 专属语法）。**回滚**：根升级 TS7 并等待 typescript-eslint 适配。
+- **日期**：2026-11-05
+
+## DL-007 E2E 执行环境定为 CI（本机仅开发配置）
+
+- **决策**：Playwright 浏览器安装与 E2E 执行在 GitHub Actions ubuntu runner 进行；本机保留规范与配置（e2e/），不装浏览器。
+- **背景**：F11——本机网络策略拦截 Playwright CDN（raw.githubusercontent 同类限制），Chromium 下载失败。
+- **备选**：手动绕过代理下载（违反"不绕过网络策略"精神）；放弃 E2E。
+- **理由**：CI 环境无下载限制且更接近真实用户环境；本机已有 Vitest 19 项 + 浏览器人工验证双兜底。
+- **风险**：E2E 结果滞后于本地开发（push 后才见）。**回滚**：本机网络策略放开后 `npx playwright install chromium` 即可本地执行。
+- **日期**：2026-11-05
