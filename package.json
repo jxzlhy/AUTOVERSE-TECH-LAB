@@ -9,7 +9,9 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "vitest run",
-    "typecheck": "pnpm exec tsc -p packages/shared && pnpm exec tsc -p packages/three-runtime && cd prototypes/automotive-studio && pnpm exec tsc --noEmit && cd ../framework-comparison/react-r3f && pnpm exec tsc --noEmit"
+    "typecheck": "pnpm exec tsc -p packages/shared && pnpm exec tsc -p packages/three-runtime && cd prototypes/automotive-studio && pnpm exec tsc --noEmit && cd ../framework-comparison/react-r3f && pnpm exec tsc --noEmit",
+    "e2e": "playwright test --config e2e/playwright.config.ts",
+    "build:all": "pnpm -r --filter './prototypes/**' build"
   },
   "engines": {
     "node": ">=22"
@@ -17,11 +19,13 @@
   "devDependencies": {
     "@gltf-transform/core": "^4.5.1",
     "@gltf-transform/extensions": "^4.5.1",
+    "@playwright/test": "^1.64.1",
+    "@types/node": "^26.6.6",
     "eslint": "^10.14.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.7",
     "prettier": "^3.9.10",
-    "typescript": "^7.0.2",
+    "typescript": "^6.0.3",
     "typescript-eslint": "^8.72.1",
     "vitest": "^5.1.0"
   }
