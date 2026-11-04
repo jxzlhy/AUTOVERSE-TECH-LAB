@@ -9,7 +9,8 @@
 
 | 项 | 值 |
 | --- | --- |
-| 当前阶段 | **EVOLUTION PHASE 2 十二轮完成**（+ PART 6.4 后处理实现：SSAO/DOF/Vignette 产品级接入 + 组合实测） |
+| 当前阶段 | **EVOLUTION PHASE 2 十三轮完成**（+ E2E 本机首次真实执行 3/3：PART 3.2/3.4 执行缺口关闭） |
+| ⚠️ 推送状态 | github.com:443 持续封锁——**本地领先远程 8 提交**（bad136e→E2E 里程碑），恢复后 `git push` 一次同步 |
 | ⚠️ 推送状态 | **github.com:443 已被网络策略持续封锁**（SSL_ERROR_SYSCALL 持续，连 npm registry 亦被断——环境网络逐块降级）。**本地领先远程 4 个提交未推送**：69db52e（Draco 闭环）/ bacba5a / scroll-narrative 封装 + 依赖纪律提交。网络恢复后 `git push` 一次即同步；断点信息完整在本文件与 CHANGELOG |
 | 新增包 | packages/motion-system（TimelineManager：单一所有权/可取消/自动清理/Reduced Motion；6 单测） |
 | 新增原型 | prototypes/shader-lab（:5177，全十 Shader 可选 Demo + 参数滑杆） |
