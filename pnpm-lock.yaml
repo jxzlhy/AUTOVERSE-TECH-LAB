@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      '@atl/design-system':
+        specifier: workspace:*
+        version: link:packages/design-system
     devDependencies:
       '@gltf-transform/core':
         specifier: ^4.5.1
@@ -68,6 +72,9 @@ importers:
 
   prototypes/automotive-studio:
     dependencies:
+      '@atl/design-system':
+        specifier: workspace:*
+        version: link:../../packages/design-system
       '@atl/shared':
         specifier: workspace:*
         version: link:../../packages/shared
