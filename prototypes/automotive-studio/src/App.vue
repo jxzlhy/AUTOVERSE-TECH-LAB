@@ -3,7 +3,18 @@ import { onBeforeUnmount, onMounted, ref } from "vue";
 import gsap from "gsap";
 import * as THREE from "three";
 import { PAINT_PRESETS } from "@atl/shared";
-import { AvHoloPanel, AvPartsTree, AvSceneSelector, AvToggle, type PartNode } from "@atl/design-system";
+import {
+  AvAnnotation,
+  AvExplorationHud,
+  AvHoloPanel,
+  AvInspector,
+  AvLocationMarker,
+  AvPartsTree,
+  AvSceneSelector,
+  AvTeleportIndicator,
+  AvToggle,
+  type PartNode,
+} from "@atl/design-system";
 import { SectionController, XRayController } from "@atl/three-runtime";
 import {
   AssetManager,
@@ -48,6 +59,32 @@ const selectedPartId = ref<string | null>(null);
 let xray: XRayController | null = null;
 let section: SectionController | null = null;
 let wireframeSaved = new Map<THREE.Mesh, boolean>();
+// —— SPATIAL UI 状态（PHASE 2D §5.2）——
+const visitedSpaces = ref(new Set<string>(["studio"]));
+const markerScreen = ref({ x: 0, y: 0, visible: false, scale: 1, dimmed: false });
+const annoScreen = ref({ x: 0, y: 0, visible: false });
+const inspectorRows = ref<{ label: string; value: string; certainty?: "confirmed" | "estimated" | "unknown" }[]>([]);
+
+function updateInspector(id: string | null): void {
+  if (!id || !studioRefs) {
+    inspectorRows.value = [];
+    return;
+  }
+  const part = studioRefs.car.parts.get(id);
+  if (!part) return;
+  part.mesh.geometry.computeBoundingBox();
+  const size = part.mesh.geometry.boundingBox?.getSize(new THREE.Vector3());
+  inspectorRows.value = [
+    { label: "名称", value: id, certainty: "confirmed" },
+    {
+      label: "位置",
+      value: `${part.base.x.toFixed(2)}, ${part.base.y.toFixed(2)}, ${part.base.z.toFixed(2)}`,
+      certainty: "confirmed",
+    },
+    { label: "尺寸", value: size ? `${size.x.toFixed(2)}×${size.y.toFixed(2)}×${size.z.toFixed(2)}` : "—", certainty: "estimated" },
+    { label: "材质", value: (part.mesh.material as THREE.Material).type, certainty: "confirmed" },
+  ];
+}
 
 // —— 运行时句柄 ——
 let renderer: THREE.WebGLRenderer;
@@ -105,6 +142,7 @@ async function goScene(id: "studio" | "energy"): Promise<void> {
   await gsap.to(overlayRef.value, { opacity: 0, duration: 0.34, ease: "power2.out" });
   activeScene.value = id;
   switching.value = false;
+  visitedSpaces.value.add(id);
   interaction.setEnabled(true);
 }
 
@@ -176,6 +214,7 @@ function onSectionSlide(v: number): void {
 function selectPart(id: string): void {
   selectedPartId.value = id;
   selectedPart.value = id;
+  updateInspector(id);
   const part = studioRefs?.car.parts.get(id);
   if (part && cameraRig) {
     cameraRig.frameObject(part.mesh, { padding: 2.2 });
@@ -265,6 +304,8 @@ async function initApp() {
   interaction.setPickables(studioRefs.car.root);
   interaction.events.on("select", ({ object }) => {
     selectedPart.value = object?.name ?? null;
+    selectedPartId.value = object?.name ?? null;
+    updateInspector(object?.name ?? null);
   });
 
   effects = new EffectManager(renderer, scene, cameraRig.camera);
@@ -329,6 +370,17 @@ onBeforeUnmount(() => {
 
     <!-- 转场遮罩 -->
     <div ref="overlayRef" class="transition-overlay" />
+
+    <!-- SPATIAL：探索 HUD（顶部中央） -->
+    <div class="hud zone-top-center">
+      <AvExplorationHud
+        :space-name="activeScene === 'studio' ? '摄影棚 STUDIO' : '能量空间 ENERGY'"
+        :visited="visitedSpaces.size"
+        :total="2"
+        hint="选择上方空间卡片传送"
+      />
+      <AvTeleportIndicator v-if="switching" state="charging" :progress="0.5" label="TP" />
+    </div>
 
     <aside v-if="fatal" class="hud fatal-note" role="alert">
       <strong>初始化失败</strong>
@@ -431,6 +483,32 @@ onBeforeUnmount(() => {
 
     <!-- 部件铭牌 -->
     <AvHoloPanel v-if="selectedPart" class="hud plaque" kicker="PART" :title="selectedPart" />
+
+    <!-- SPATIAL：3D 锚定标记（跟随选中部件，距离缩放/背后隐藏） -->
+    <AvLocationMarker
+      v-if="selectedPart && activeScene === 'studio'"
+      class="anchored"
+      :label="selectedPart"
+      sub="SELECTED"
+      :visible="markerScreen.visible"
+      :scale="markerScreen.scale"
+      :dimmed="markerScreen.dimmed"
+      :style="{ transform: `translate(${markerScreen.x}px, ${markerScreen.y - 26}px) translateX(-50%)` }"
+    />
+
+    <!-- ENGINEERING：GLB 工程标注（编号旗标 + 引线） -->
+    <div
+      v-if="annoScreen.visible && activeScene === 'studio' && !xrayOn"
+      class="anchored"
+      :style="{ transform: `translate(${annoScreen.x + 30}px, ${annoScreen.y - 40}px)` }"
+    >
+      <AvAnnotation :index="1" text="SIMULATED · CC0 · Khronos ToyCar" />
+    </div>
+
+    <!-- ENGINEERING：部件检查器 -->
+    <aside v-if="inspectorRows.length && activeScene === 'studio'" class="hud zone-right-inspector">
+      <AvInspector title="Component Inspector" :rows="inspectorRows" />
+    </aside>
 
     <!-- 右下：性能读数 -->
     <footer class="hud zone-bottom-right stats" aria-live="off">
