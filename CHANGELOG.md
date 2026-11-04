@@ -2,6 +2,13 @@
 
 本仓库遵循阶段化推进；每阶段在 docs/09-handoff/ 留交接报告。
 
+## [Evolution-2 三轮] 2026-11-05 — CORE UI 补齐 + Blender 研究 + DeLorean 骨架
+
+### Added
+- **CORE UI v0.3 六件**：Dropdown（点击外/Esc 关闭）/Tooltip（hover+focus）/Drawer（Esc+遮罩）/Search（⏎ 提交）/Select（原生基座+Token 皮肤）/Nav（aria-current）——接入 Playground 真实交互
+- **Blender 自动化研究**（docs/08-research/blender-automation.md）：bpy 无头批处理/glTF 导出/自动命名/网格材质检查/优化——R 级（官方文档核实，GPL 资产边界澄清：导出资产不传染）；检查脚本骨架设计，**V 级待 Blender 环境落地**
+- **DeLorean 专题骨架**（prototypes/delorean-showcase :5178）：真实 DMC-12（REAL）与影视改装时空车（FICTION）**Tab 显式区分**，IP 边界横幅（DMC 商标≠Universal 影视权），资产"待寻源不出示 3D"——不伪装红线落实
+
 ## [Evolution-2 续] 2026-11-05 — PHASE 2D/2E 深化
 
 ### Added

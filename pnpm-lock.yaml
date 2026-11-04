@@ -119,6 +119,28 @@ importers:
         specifier: ^3.1.0
         version: 3.3.14(typescript@7.0.2)
 
+  prototypes/delorean-showcase:
+    dependencies:
+      '@atl/design-system':
+        specifier: workspace:*
+        version: link:../../packages/design-system
+      '@atl/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
+      vue:
+        specifier: ^3.5.44
+        version: 3.5.44(typescript@7.0.2)
+    devDependencies:
+      '@vitejs/plugin-vue':
+        specifier: ^6.0.10
+        version: 6.0.10(vite@8.3.5(@types/node@26.6.6))(vue@3.5.44(typescript@7.0.2))
+      typescript:
+        specifier: ^7.0.2
+        version: 7.0.2
+      vite:
+        specifier: ^8.3.5
+        version: 8.3.5(@types/node@26.6.6)
+
   prototypes/design-playground:
     dependencies:
       '@atl/design-system':
