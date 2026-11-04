@@ -12,7 +12,7 @@
 import * as THREE from "three";
 import { PAINT_PRESETS, colors } from "@atl/shared";
 
-type ScenarioId = "A" | "B" | "D" | "G" | "H" | "J";
+type ScenarioId = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J";
 
 interface BenchmarkResult {
   scenario: ScenarioId;
@@ -23,6 +23,7 @@ interface BenchmarkResult {
   drawCalls: number;
   triangles: number;
   geometries: number;
+  sceneSwitchAvgMs: number | null;
   materials: number;
   textures: number;
   jsMemoryMB: number | null; // 仅 Chrome（performance.memory），其他浏览器 null
@@ -102,6 +103,7 @@ function buildCarGeometryParts(): { geo: THREE.BufferGeometry; mat: THREE.Materi
 let world: THREE.Group | null = null;
 let bloomComposer: { render(): void; setSize(w: number, h: number): void } | null = null;
 let particles: THREE.Points | null = null;
+const multiScene = { enabled: false, phase: 0, switchMs: [] as number[] };
 
 function clearWorld(): void {
   if (!world) return;
@@ -237,6 +239,60 @@ const builders: Record<ScenarioId, () => Promise<void> | void> = {
     builders.A();
     void loadBloom();
   },
+  // C 高多边形模型（细分 96 段几何，~5.5 万三角形量级）
+  C: () => {
+    const w = addWorld();
+    const hi = new THREE.Mesh(
+      new THREE.TorusKnotGeometry(1.6, 0.5, 512, 96),
+      new THREE.MeshPhysicalMaterial({ color: PAINT_PRESETS[0].color, metalness: 0.9, roughness: 0.25, clearcoat: 1 }),
+    );
+    hi.position.y = 2.4;
+    w.add(hi);
+  },
+  // E 大量材质（60 个独立材质 draw call）
+  E: () => {
+    const w = addWorld();
+    const geo = new THREE.BoxGeometry(1.6, 1.6, 1.6);
+    for (let i = 0; i < 60; i++) {
+      const hue = i / 60;
+      const m = new THREE.Mesh(
+        geo,
+        new THREE.MeshPhysicalMaterial({
+          color: new THREE.Color().setHSL(hue, 0.6, 0.55),
+          metalness: 0.6,
+          roughness: 0.3,
+          clearcoat: 0.5,
+        }),
+      );
+      m.position.set(((i % 10) - 4.5) * 2.6, 0.8, (Math.floor(i / 10) - 2.5) * 2.6);
+      w.add(m);
+    }
+  },
+  // F 大纹理（2× 4096² 程序化画布纹理）
+  F: () => {
+    const w = addWorld();
+    for (let k = 0; k < 2; k++) {
+      const cv = document.createElement("canvas");
+      cv.width = cv.height = 4096;
+      const ctx = cv.getContext("2d")!;
+      for (let i = 0; i < 2400; i++) {
+        ctx.fillStyle = `hsl(${Math.random() * 360},60%,${30 + Math.random() * 40}%)`;
+        ctx.fillRect(Math.random() * 4096, Math.random() * 4096, 24, 24);
+      }
+      const tex = new THREE.CanvasTexture(cv);
+      tex.anisotropy = 4;
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(14, 14), new THREE.MeshStandardMaterial({ map: tex }));
+      m.position.set(k * 16 - 8, 0.02 + k * 0.01, 0);
+      m.rotation.x = -Math.PI / 2;
+      w.add(m);
+    }
+  },
+  // I 多场景切换（A/B 两组互切，记录切换耗时进 frame 序列间隙）
+  I: () => {
+    builders.A();
+    // 切换由 run 循环按 2s 周期执行：A↔B 场景组重建 + 切换耗时计入 buildResult.sceneSwitchMs
+    multiScene.enabled = true;
+  },
   // J 长时间运行（同 A，duration 由参数控制，默认建议 ≥120）
   J: () => builders.A(),
 };
@@ -299,6 +355,9 @@ function buildResult(): BenchmarkResult {
     textures: renderer.info.memory.textures,
     jsMemoryMB: jsMemoryMB(),
     gpuMemoryMB: "NOT_MEASURABLE",
+    sceneSwitchAvgMs: multiScene.switchMs.length
+      ? Number((multiScene.switchMs.reduce((a, b) => a + b, 0) / multiScene.switchMs.length).toFixed(2))
+      : null,
     environment: {
       userAgent: navigator.userAgent,
       dpr: devicePixelRatio,
@@ -342,6 +401,14 @@ function tick(now: number): void {
     renderer.render(scene, camera);
   }
   const elapsed = (now - startedAt) / 1000;
+  // I 场景：每 2s 重建另一场景组（衡量销毁+重建切换耗时，CPU 侧）
+  if (multiScene.enabled && elapsed - multiScene.phase * 2 >= 2) {
+    multiScene.phase++;
+    const t0 = performance.now();
+    builders[multiScene.phase % 2 === 1 ? "B" : "A"]();
+    resize();
+    multiScene.switchMs.push(performance.now() - t0);
+  }
   renderUI(
     `SCENARIO ${scenarioId} ｜ ${elapsed.toFixed(1)}s / ${durationSec}s\n` +
       `FPS(avg): ${fpsCount ? Math.round(fpsSum / fpsCount) : "—"} ｜ frame: ${dt.toFixed(1)}ms\n` +
@@ -389,7 +456,7 @@ if (autostart) {
 } else {
   renderUI(
     `ATL Performance Benchmark\n` +
-      `scenario=${scenarioId} duration=${durationSec}s\n` +
+      `scenario=${scenarioId}（A/B/C/D/E/F/G/H/I/J）duration=${durationSec}s\n` +
       `添加 &autostart=1 开始；结果 JSON 自动下载。\n` +
       `⚠ headless/软件渲染结果不代表真实 GPU 性能，请用日常浏览器执行。`,
   );
