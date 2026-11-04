@@ -341,7 +341,49 @@ async function initApp() {
     cameraRig.update();
     effects.render();
     perfMonitor.sample(performance.now());
+    updateSpatialAnchors();
   });
+  }
+}
+
+/** SPATIAL UI 锚定：3D 世界坐标 → 屏幕像素（每帧；遮挡简化为"相机背后即隐藏"） */
+function updateSpatialAnchors(): void {
+  const w = canvasRef.value?.clientWidth ?? 1;
+  const h = canvasRef.value?.clientHeight ?? 1;
+  const project = (obj: THREE.Object3D, yOff: number) => {
+    const pos = obj.getWorldPosition(new THREE.Vector3());
+    pos.y += yOff;
+    const ndc = pos.clone().project(cameraRig.camera);
+    const behind = ndc.z > 1;
+    return {
+      x: (ndc.x * 0.5 + 0.5) * w,
+      y: (-ndc.y * 0.5 + 0.5) * h,
+      visible: !behind,
+      dist: cameraRig.camera.position.distanceTo(pos),
+    };
+  };
+  // 选中部件标记（世界坐标略抬升）
+  if (selectedPartId.value && activeScene.value === "studio" && studioRefs) {
+    const part = studioRefs.car.parts.get(selectedPartId.value);
+    if (part) {
+      const pr = project(part.mesh, 0.9);
+      markerScreen.value = {
+        x: pr.x,
+        y: pr.y,
+        visible: pr.visible,
+        scale: Math.min(Math.max(9 / pr.dist, 0.55), 1.25), // 距离缩放
+        dimmed: pr.dist > 16,
+      };
+    }
+  } else {
+    markerScreen.value = { ...markerScreen.value, visible: false };
+  }
+  // GLB 工程标注锚点
+  if (studioRefs?.glbGroup && activeScene.value === "studio") {
+    const pr = project(studioRefs.glbGroup, 2.4);
+    annoScreen.value = { x: pr.x, y: pr.y, visible: pr.visible };
+  } else {
+    annoScreen.value = { ...annoScreen.value, visible: false };
   }
 }
 
