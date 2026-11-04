@@ -84,6 +84,9 @@ importers:
       '@atl/design-system':
         specifier: workspace:*
         version: link:../../packages/design-system
+      '@atl/motion-system':
+        specifier: workspace:*
+        version: link:../../packages/motion-system
       '@atl/shared':
         specifier: workspace:*
         version: link:../../packages/shared

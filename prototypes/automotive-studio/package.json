@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@atl/design-system": "workspace:*",
+    "@atl/motion-system": "workspace:*",
     "@atl/shared": "workspace:*",
     "@atl/three-runtime": "workspace:*",
     "gsap": "^3.15.1",
