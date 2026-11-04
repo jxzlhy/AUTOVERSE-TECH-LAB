@@ -278,13 +278,10 @@ function buildResult(): BenchmarkResult {
   const sorted = [...frameTimes].sort((a, b) => a - b);
   const p95 = sorted[Math.floor(sorted.length * 0.95)] ?? 0;
   const avg = frameTimes.length ? frameTimes.reduce((s, v) => s + v, 0) / frameTimes.length : 0;
-  let geo = 0;
   let mats = 0;
-  const tex = 0;
   world?.traverse((o) => {
     const m = o as THREE.Mesh;
     if (m.isMesh || (o as THREE.Points).isPoints) {
-      geo++;
       const list = Array.isArray(m.material) ? m.material : m.material ? [m.material] : [];
       mats += list.length;
     }
@@ -311,7 +308,6 @@ function buildResult(): BenchmarkResult {
       headlessSuspected: isHeadlessSuspect(),
     },
   };
-  void tex;
 }
 
 function renderUI(line: string): void {
