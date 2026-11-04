@@ -23,3 +23,16 @@ export {
   type ShaderHandle,
 } from "./shader-library";
 export { XRayController, SectionController, type SectionRange } from "./engineering";
+export {
+  makeScanMaterial,
+  makeFresnelMaterial,
+  makeDigitalGridMaterial,
+  makeOutlineMaterial,
+  makeHeatmapMaterial,
+  makeWireframeHandle,
+} from "./shader-library";
+export {
+  createAutomaterial,
+  MATERIAL_PRESET_INFO,
+  type AutomotiveMaterialPreset,
+} from "./material-presets";
