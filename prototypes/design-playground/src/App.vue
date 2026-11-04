@@ -1,11 +1,18 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { colors } from "@atl/shared";
-import { AvBadge, AvButton, AvCard, AvInput, AvModal } from "@atl/design-system";
+import { AvBadge, AvButton, AvCard, AvInput, AvModal, AvTabs, AvToast } from "@atl/design-system";
 
 const modalOpen = ref(false);
 const name = ref("");
 const badEmail = ref("not-an-email");
+const toastMsg = ref<string | null>(null);
+let toastSeq = 0;
+
+function fireToast(): void {
+  toastSeq += 1;
+  toastMsg.value = `操作已记录 #${toastSeq}`; // key 强制重建组件以重复演示
+}
 
 const swatches = [
   { label: "bg-void", value: colors.bgVoid },
@@ -86,6 +93,24 @@ const swatches = [
       </AvCard>
     </div>
 
+    <!-- Tabs + Toast -->
+    <AvCard title="Tabs & Toast" tag="CORE UI v0.1">
+      <AvTabs
+        :tabs="[
+          { id: 'overview', label: '总览' },
+          { id: 'specs', label: '参数' },
+          { id: 'history', label: '历史' },
+        ]"
+      >
+        <template #overview>展品总览面板（键盘 ←/→ 可切换标签）。</template>
+        <template #specs>参数面板：动力/底盘/尺寸。</template>
+        <template #history>历史面板：1981—至今。</template>
+      </AvTabs>
+      <div class="row" style="margin-top: 14px">
+        <AvButton variant="primary" @click="fireToast">触发 Toast</AvButton>
+      </div>
+    </AvCard>
+
     <AvModal :open="modalOpen" title="展品操作确认" @close="modalOpen = false">
       <p>确认将「DeLorean DMC-12」标记为收藏？此操作会同步到探索历史。</p>
       <div class="row modal-actions">
@@ -93,6 +118,8 @@ const swatches = [
         <AvButton variant="primary" @click="modalOpen = false">确认</AvButton>
       </div>
     </AvModal>
+
+    <AvToast v-if="toastMsg" :key="toastSeq" :message="toastMsg" kind="success" />
 
     <footer class="page-foot">
       <span class="kicker">docs/04-design-system · playground v0 · 2026-11-05</span>
