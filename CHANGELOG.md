@@ -2,6 +2,31 @@
 
 本仓库遵循阶段化推进；每阶段在 docs/09-handoff/ 留交接报告。
 
+## [Evolution-1] 2026-11-05 — 通宵自主进化（MASTER PLAN V1.0 首轮）
+
+### Added
+
+- **断点续跑机制**：`PROJECT_STATE.md` + `DECISION_LOG.md`（DL-001~005）；总指令全文落盘 `docs/05-ai-workflow/FOUNDATION_AND_OVERNIGHT_EVOLUTION_MASTER_PLAN.md`
+- **工程规范**：ESLint 9 flat + typescript-eslint 8.72（**TS 7.0.2 实测兼容**）+ Prettier + Vitest；`pnpm lint / test` 门禁
+- **packages/shared**：Design Tokens 代码化（colors/spacing/motion/glass + validateColorTokens）
+- **packages/three-runtime**（八模块，**11 项单测全通过**）：SceneManager（状态机+异步激活+回滚）、AssetManager（去重缓存+真实解析统计）、ResourceDisposer（真实释放计数）、CameraController（Box3 取景数学）、LightingManager（STUDIO/MUSEUM/NIGHT/ENGINEERING/CINEMATIC）、InteractionManager（raycast 拾取+双态高亮）、EffectManager（Bloom+setScene）、PerformanceMonitor（时间窗聚合）、AnimationManager
+- **packages/design-system（CORE UI v0）**：AvButton/AvInput/AvCard/AvBadge/AvModal（无障碍基线 + prefers-reduced-motion）
+- **资产管线首件**：Khronos ToyCar.glb（**CC0 官方 LICENSE.md 核实**）入库 + `tools/inspect-glb.mjs`（层级/材质/纹理/包围盒/部件候选带置信度）+ 检查报告 + CREDITS 档案
+- **旗舰原型 automotive-studio**：SceneManager 双场景（摄影棚⇄能量空间）+ GSAP 遮罩转场 + 真实 GLB 加载统计上屏 + 零件拾取 + 爆炸拆解（纯函数 + GSAP 补间）+ 5 灯光预设 + 4 车漆 + Bloom + Hologram shader（Fresnel+扫描线）+ 3000 粒子 + 性能 HUD
+- **design-playground**：CORE UI 验收环境（色板/状态矩阵/对话框）
+
+### Verified（V 级实测）
+
+- 三旧原型 + 两新原型 `vite build` 全通过；eslint 0 问题；vitest 11/11；automotive-studio `tsc --noEmit` 0 错误
+- 浏览器实测：旗舰原型双场景转场/爆炸终态/车漆/灯光/Bloom/Hologram/粒子（能量空间 **32FPS 真实读数**）；Playground 全组件状态 + Modal Esc 关闭
+
+### Findings（本轮新增实测发现）
+
+- F7 typescript-eslint 8.72 兼容 TS 7.0.2（F1 顾虑部分解除；vue-tsc 仍不兼容）
+- F8 Vite 转译后 `import.meta.url` 锚点不可靠（vite.config 中用 cwd 向上探测仓库根）
+- F9 gltf-transform `accessor.getMin()` 部分模型崩溃（自算 POSITION 包围盒绕过）
+- F10 IAB 节流环境下 GSAP 补间不可视：连续截图强制合成帧可推进时间轴（验证方法论）
+
 ## [Phase 1] 2026-11-04 ~ 2026-11-05 — 技术实验室初始化与知识库建设
 
 ### Added（新增）

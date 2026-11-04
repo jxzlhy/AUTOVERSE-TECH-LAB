@@ -5,59 +5,52 @@
 
 ---
 
-## 当前快照（更新于 2026-11-05 凌晨）
+## 当前快照（更新于 2026-11-05 通宵自主进化）
 
 | 项 | 值 |
 | --- | --- |
-| 当前阶段 | **MASTER PLAN 执行中**（总指令 V1.0，见 docs/05-ai-workflow/FOUNDATION_AND_OVERNIGHT_EVOLUTION_MASTER_PLAN.md） |
-| 上一里程碑 | Phase 1 基础建设完成（2026-11-05，见 docs/09-handoff/phase-1-handoff.md） |
-| 最新 Commit | d577e4e（推送时点） |
-| 分支 | main（与 origin/main 同步） |
-| 工作区 | 干净（本轮开工时审计确认） |
-| 执行模式 | FULL AUTONOMOUS（通宵自主进化） |
+| 当前阶段 | **MASTER PLAN 通宵自主进化已完成本轮**（总指令 V1.0） |
+| 上一里程碑 | Phase 1 基础建设（2026-11-05）→ 本轮：packages 体系 + 旗舰原型 + 设计系统 |
+| 最新 Commit | 见 git log（本轮最终 SHA 在演进报告 A 节） |
+| 分支 | main（已推送） |
+| 执行模式 | 本轮结束；下轮从"未完成"继续 |
 
-## 已完成（可信成果）
+## 已完成（通宵进化轮，全部浏览器实测）
 
-- **知识库**：章程/总纲/AGENTS/AI_WORKFLOW/设计系统 v1.0/六份技术研究/架构报告/选型报告(ADR-001~005)/资产许可/性能研究/依赖登记/资源索引/交接报告
-- **原型**：framework-comparison 三路线（vue-three / react-r3f / vue-babylon）构建+浏览器双验证，实测发现 F1–F6
-- **技术基线**：Vue 3.5 + 原生 three r187 + GSAP 3.15 + Pinia + Vite 8(Rolldown) + TS 7.0.2
+1. **PHASE 0 审查**：Git/构建/依赖全绿，技术债 D1–D6 登记
+2. **总指令落盘** + PROJECT_STATE/DECISION_LOG 断点续跑机制（057edee）
+3. **工程规范**：ESLint9(flat)+typescript-eslint 8.72（**TS7 实测兼容**）+ Prettier + Vitest，lint/test 脚本门禁（403ca9e 前置）
+4. **packages 体系**：@atl/shared（Tokens 代码化）+ @atl/three-runtime（SceneManager/AssetManager/ResourceDisposer/CameraController/LightingManager×5预设/InteractionManager/EffectManager/PerformanceMonitor/AnimationManager）+ **11 项单元测试全通过**（403ca9e）
+5. **资产管线**：Khronos ToyCar.glb（**CC0 官方核实**）入库 + tools/inspect-glb.mjs 检查工具 + 检查报告 + CREDITS 档案（22a69a0）
+6. **旗舰原型 automotive-studio**（5aea09e）：双场景 SceneManager + GSAP 转场 + GLB 真实加载（3mesh/3mat/8tex/25.8K tris 上屏）+ 零件拾取 + 爆炸拆解（截图验证）+ 5 灯光预设 + 4 车漆 + Bloom + Hologram shader + 粒子 + 性能 HUD（能量空间实测 32FPS）
+7. **packages/design-system（CORE UI v0）** + design-playground（2498d38）：Button/Input/Card/Badge/Modal，色板/状态矩阵/对话框（遮罩+Esc）浏览器验收
 
-## 正在进行
+## 未完成（下一轮候选，按价值排序）
 
-- MASTER PLAN PHASE 0→1：审计✅ → 总指令落盘✅ → PROJECT_STATE/DECISION_LOG（本文件）→ 工程规范（ESLint/Prettier/Vitest）→ packages 体系 → 旗舰原型
+1. **真实浏览器性能基准**（framework-comparison F4 遗留）：三路线 FPS 复测 + performance-benchmark 原型（Draco/KTX2 压缩对比）
+2. **Playwright E2E 门禁**：页面冒烟（canvas 存在/HUD 文案/无 console error）+ CI 接入
+3. **gsap-motion 原型**：render-target 着色器转场（当前为遮罩+镜头转场）
+4. **SPATIAL UI / ENGINEERING UI 组件**（design-system v0 只有 CORE UI 线）
+5. **更多 GLB 资产**：poly.pizza/Quaternius CC0 车模铺量 + 质量分级实践
+6. **X-Ray/Dissolve 等 shader 试点扩充**（本轮完成 Hologram）
+7. **Vue 线类型门禁**：试 TS5.9 组合恢复 vue-tsc
 
-## 未完成 / 本轮计划
+## 技术债（更新）
 
-按依赖顺序（详见 DECISION_LOG 与 MASTER PLAN PART 16）：
+| # | 债 | 状态 |
+| --- | --- | --- |
+| D1 | vue-tsc × TS7 | 未解（react 线 tsc 已启用；automotive-studio 已加 tsc --noEmit 门禁覆盖 .ts） |
+| D2 | ESLint/Prettier/Vitest | ✅ 已落地；Playwright 未做 |
+| D3 | Runtime 内嵌原型 | ✅ 已抽出 packages/three-runtime |
+| D4 | 无真实 GLB/检查工具 | ✅ 已落地（ToyCar + inspect-glb） |
+| D5 | IAB FPS 失真 | 已验证方法论：真实浏览器复测待做 |
+| D6 | 无场景管理/转场 | ✅ SceneManager + 转场已落地（着色器转场待做） |
+| D7 | 新增：GSAP 补间在 IAB 节流环境不可视（验证方法论：连续截图强制合成帧） | 已记录验证技巧 |
 
-1. 工程规范落地（ESLint flat + Prettier + Vitest；TS7 兼容性实测，受阻则降级记录）
-2. `packages/shared`（Design Tokens 代码化）+ `packages/three-runtime`（SceneManager/AssetManager/CameraController/LightingManager(5 预设)/InteractionManager/EffectManager/ResourceDisposer/PerformanceMonitor）+ 单元测试
-3. 资产管线：Khronos CC0 GLB 入库 + `tools/inspect-glb.mjs` 检查工具 + 许可档案
-4. 旗舰原型 `prototypes/automotive-studio/`：真实 GLB + 灯光预设 + 零件拾取/爆炸拆解 + Bloom + 场景转场 + 性能 HUD
-5. `prototypes/design-playground/`：CORE UI 组件与状态展示
-6. Shader 试点（Hologram/Fresnel/Dissolve/X-Ray）进入能量空间场景
-7. 浏览器视觉审查 + 修复；文档同步；最终演进报告（PART 21 A–J）
+## 用户待处理事项
 
-## 技术债（PHASE 0 审计结论）
+- 暂无阻塞。远期：Sketchfab 账号（如需批量下载）、付费高模采购、DeLorean 法务意见。
 
-| # | 债 | 影响 | 处置 |
-| --- | --- | --- | --- |
-| D1 | vue-tsc 3.3.14 × TS 7.0.2 不兼容 | Vue 线无类型门禁 | 试 TS5.9 组合；受阻则保持 tsc(react 线)+构建门禁，登记在案 |
-| D2 | 无 ESLint/Prettier/Vitest/Playwright | 代码质量无自动门禁 | 本轮补齐前三者；Playwright 下一轮 |
-| D3 | Runtime 逻辑内嵌在原型 app 里 | 无法复用/测试 | 本轮抽出 packages/three-runtime |
-| D4 | 无真实 GLB 资产与检查工具 | 交互演示停留在程序化几何 | 本轮引入 CC0 资产 + 检查工具 |
-| D5 | IAB 环境 FPS 读数失真（F4） | 性能结论受限 | benchmark 用真实浏览器；已在文档标注 |
-| D6 | 无场景管理/转场系统 | 多空间不可行 | 本轮 SceneManager + GSAP 转场试点 |
+## 下一步（断点续跑）
 
-## 已知问题
-
-- F1–F6 见 prototypes/framework-comparison/README.md §4
-- K5：影视载具版权（DeLorean）商用前需法务意见
-
-## 用户待处理事项（无阻塞）
-
-- 暂无。Sketchfab 登录/付费资产/法务意见为远期事项，本轮不依赖。
-
-## 下一步（断点续跑指令）
-
-若会话中断：读本文件 → 读 DECISION_LOG.md → git log 确认最新提交 → 从"未完成/本轮计划"列表第一个未勾选项继续。
+读本文件"未完成"清单第 1 项开始；先 `pnpm test && pnpm lint && pnpm -r build` 确认基线。
