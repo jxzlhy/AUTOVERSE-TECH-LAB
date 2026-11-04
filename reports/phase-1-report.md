@@ -15,7 +15,7 @@
 | 7. Design System 规范 | ✅ docs/04-design-system/design-system.md v1.0 |
 | 8. AI 开发工作流 | ✅ AGENTS.md + docs/05-ai-workflow/AI_WORKFLOW.md |
 | 9. 研究资源索引 | ✅ docs/08-research/（索引 + 依赖登记册） |
-| 10. 技术原型实施计划 | ✅ prototypes/ 七个目录（1 个完成+6 个计划） |
+| 10. 技术原型实施计划 | ✅ prototypes/ 八个目录（1 个完成+7 个计划） |
 | 11. 阶段交接报告 | ✅ docs/09-handoff/phase-1-handoff.md |
 | 12. GitHub 提交记录 | ✅ 分阶段 commit+push 全程执行 |
 

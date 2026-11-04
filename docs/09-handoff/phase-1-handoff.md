@@ -67,7 +67,7 @@
 
 ## 8. 交接产物清单
 
-全部已推送 GitHub（main 分支）：目录体系、AGENTS.md、章程、产品总纲、架构报告、六份技术研究文档、选型比较报告（ADR）、设计系统 v1.0、AI_WORKFLOW、资产与许可研究、性能研究 v0、依赖登记册、研究资源索引、三路线原型（可运行）、六份原型实施计划、CHANGELOG、本报告与 reports/phase-1-report.md。
+全部已推送 GitHub（main 分支）：目录体系、AGENTS.md、章程、产品总纲、架构报告、六份技术研究文档、选型比较报告（ADR）、设计系统 v1.0、AI_WORKFLOW、资产与许可研究、性能研究 v0、依赖登记册、研究资源索引、三路线原型（可运行）、七份原型实施计划、CHANGELOG、本报告与 reports/phase-1-report.md。
 
 ---
 
