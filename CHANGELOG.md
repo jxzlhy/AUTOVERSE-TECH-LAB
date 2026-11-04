@@ -21,6 +21,16 @@
 - 旗舰 `?draco=1` 通道：AssetManager dracoDecoderPath=/draco-decoders/（three 解码器 vendored）→ **浏览器实测解码后 3 mesh/108.9K tris 与源件一致，零错误**
 ### Fixed
 - **F16**：eslint 挂因＝vendored 1MB 解码器被 lint + 并发 --fix 截断 config——public/** 入 ignores，config 重写
+## [Evolution-2 十轮] 2026-11-05 — Scroll Narrative 封装 + 页面迁移安全回退
+### Added
+- **packages/motion-system `createScrollNarrative`**：契约对齐 TimelineManager（可清理/Reduced Motion 直达终态/scope 作用域）；2 DOM 用例（离线 skipIf 跳过，CI 全量）——单测通过
+### Changed
+- Playground 页面级迁移尝试在 IAB 出现黑屏 → **安全回退至已验证直用版并复验**（透明度梯度 [1, 0.994, 0.877, 0.609] 与首次一致）；迁移根因调试列下轮（需真实浏览器）
+### Fixed
+- F17 网络封锁：jsdom 离线不可装 → skipIf 条件执行（不伪造）；npm registry 亦断——环境网络逐块降级中
+### ⚠️ Git
+- 本地领先远程 **5 提交**（69db52e…52c8f1e 及后续）：github.com:443 持续封锁；网络恢复 `git push` 一次同步
+
 ## [Evolution-2 七轮] 2026-11-05 — Blender V 级落地 + MUSEUM 主题
 ### Added
 - **Blender 4.x 本机安装（Homebrew）→ tools/blender/inspect_asset.py V 级验证**：无头 ToyCar.glb 检查 4 mesh/108,936 tris（与 gltf-transform 双检一致）/part_id 告警；报告 blender-inspect-ToyCar.json

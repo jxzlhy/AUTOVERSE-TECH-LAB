@@ -29,6 +29,8 @@ const narrativeSteps = [
 ];
 let narrativeCtx: gsap.Context | null = null;
 onMounted(() => {
+  // 直用 ScrollTrigger 版（浏览器已验证）；motion-system.createScrollNarrative 封装已就绪
+  //（单测通过），页面级迁移待 IAB 可验证窗口——见 PROJECT_STATE
   narrativeCtx = gsap.context(() => {
     gsap.utils.toArray<HTMLElement>(".narr-step").forEach((el) => {
       gsap.fromTo(
