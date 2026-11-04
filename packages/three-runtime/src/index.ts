@@ -16,4 +16,9 @@ export { InteractionManager, type InteractionEvents } from "./InteractionManager
 export { EffectManager, DEFAULT_BLOOM, type BloomParams } from "./EffectManager";
 export { PerformanceMonitor } from "./PerformanceMonitor";
 export { AnimationManager } from "./AnimationManager";
-export { makeXRayMaterial, makeDissolveMaterial, makeEnergyFlowMaterial, type ShaderHandle } from "./shader-library";
+export {
+  makeXRayMaterial,
+  makeDissolveMaterial,
+  makeEnergyFlowMaterial,
+  type ShaderHandle,
+} from "./shader-library";

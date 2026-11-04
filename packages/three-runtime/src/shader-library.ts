@@ -59,7 +59,9 @@ export function makeXRayMaterial(colorHex: number, opacity = 0.35): ShaderHandle
  * progress 0→1：先从噪声值高于阈值处开始碎裂消失，边缘可加发光色。
  * 性能：一次 3D 噪声（hash 实现，无纹理采样），成本低。
  */
-export function makeDissolveMaterial(edgeColorHex = 0x22d3ee): ShaderHandle & { setProgress: (t: number) => void } {
+export function makeDissolveMaterial(
+  edgeColorHex = 0x22d3ee,
+): ShaderHandle & { setProgress: (t: number) => void } {
   const noiseGLSL = /* glsl */ `
     float hash(vec3 p) {
       p = fract(p * 0.3183099 + 0.1);

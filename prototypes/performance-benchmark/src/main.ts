@@ -79,9 +79,23 @@ function makeGround(): THREE.Mesh {
 function buildCarGeometryParts(): { geo: THREE.BufferGeometry; mat: THREE.Material }[] {
   // 与 framework-comparison 同规格的简化车体（车身/座舱/轮）
   return [
-    { geo: new THREE.BoxGeometry(4.4, 0.72, 1.9), mat: new THREE.MeshPhysicalMaterial({ color: PAINT_PRESETS[0].color, metalness: 0.9, roughness: 0.35, clearcoat: 1 }) },
-    { geo: new THREE.BoxGeometry(2.3, 0.58, 1.7), mat: new THREE.MeshStandardMaterial({ color: "#0B1220", roughness: 0.08, metalness: 0.1 }) },
-    { geo: new THREE.CylinderGeometry(0.42, 0.42, 0.34, 24), mat: new THREE.MeshStandardMaterial({ color: "#111318", roughness: 0.95 }) },
+    {
+      geo: new THREE.BoxGeometry(4.4, 0.72, 1.9),
+      mat: new THREE.MeshPhysicalMaterial({
+        color: PAINT_PRESETS[0].color,
+        metalness: 0.9,
+        roughness: 0.35,
+        clearcoat: 1,
+      }),
+    },
+    {
+      geo: new THREE.BoxGeometry(2.3, 0.58, 1.7),
+      mat: new THREE.MeshStandardMaterial({ color: "#0B1220", roughness: 0.08, metalness: 0.1 }),
+    },
+    {
+      geo: new THREE.CylinderGeometry(0.42, 0.42, 0.34, 24),
+      mat: new THREE.MeshStandardMaterial({ color: "#111318", roughness: 0.95 }),
+    },
   ];
 }
 
@@ -137,7 +151,12 @@ const builders: Record<ScenarioId, () => Promise<void> | void> = {
     const cabin = new THREE.Mesh(parts[1].geo, parts[1].mat);
     cabin.position.set(-0.25, 1.4, 0);
     car.add(body, cabin);
-    for (const [x, z] of [[1.45, 0.95], [1.45, -0.95], [-1.45, 0.95], [-1.45, -0.95]] as const) {
+    for (const [x, z] of [
+      [1.45, 0.95],
+      [1.45, -0.95],
+      [-1.45, 0.95],
+      [-1.45, -0.95],
+    ] as const) {
       const wheel = new THREE.Mesh(parts[2].geo, parts[2].mat);
       wheel.rotation.x = Math.PI / 2;
       wheel.position.set(x, 0.42, z);
@@ -161,7 +180,12 @@ const builders: Record<ScenarioId, () => Promise<void> | void> = {
       const cab = m4.clone().multiply(new THREE.Matrix4().makeTranslation(-0.25, 1.4, 0));
       inst[1].setMatrixAt(i, cab);
       for (let k = 0; k < 4; k++) {
-        const [wx, wz] = [[1.45, 0.95], [1.45, -0.95], [-1.45, 0.95], [-1.45, -0.95]][k];
+        const [wx, wz] = [
+          [1.45, 0.95],
+          [1.45, -0.95],
+          [-1.45, 0.95],
+          [-1.45, -0.95],
+        ][k];
         const wm = m4.clone().multiply(new THREE.Matrix4().makeTranslation(wx, 0.42, wz));
         inst[2].setMatrixAt(i, wm);
       }
@@ -198,7 +222,13 @@ const builders: Record<ScenarioId, () => Promise<void> | void> = {
     geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
     particles = new THREE.Points(
       geo,
-      new THREE.PointsMaterial({ color: 0x22d3ee, size: 0.15, transparent: true, opacity: 0.8, depthWrite: false }),
+      new THREE.PointsMaterial({
+        color: 0x22d3ee,
+        size: 0.15,
+        transparent: true,
+        opacity: 0.8,
+        depthWrite: false,
+      }),
     );
     w.add(particles);
   },
@@ -239,7 +269,9 @@ function jsMemoryMB(): number | null {
 
 function isHeadlessSuspect(): boolean {
   const name = gpuRendererName().toLowerCase();
-  return name.includes("swiftshader") || name.includes("software") || name.includes("angle (software");
+  return (
+    name.includes("swiftshader") || name.includes("software") || name.includes("angle (software")
+  );
 }
 
 function buildResult(): BenchmarkResult {
@@ -248,7 +280,7 @@ function buildResult(): BenchmarkResult {
   const avg = frameTimes.length ? frameTimes.reduce((s, v) => s + v, 0) / frameTimes.length : 0;
   let geo = 0;
   let mats = 0;
-  let tex = 0;
+  const tex = 0;
   world?.traverse((o) => {
     const m = o as THREE.Mesh;
     if (m.isMesh || (o as THREE.Points).isPoints) {
