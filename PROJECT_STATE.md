@@ -9,8 +9,8 @@
 
 | 项 | 值 |
 | --- | --- |
-| 当前阶段 | **EVOLUTION PHASE 2 九轮完成**（+ Draco→three 解码闭环：Blender 导出 -59% / 解码一致 / F16 修复） |
-| ⚠️ 推送状态 | 最新提交 `69db52e`（Draco 闭环）**本地已提交、推送暂失败**——github.com:443 SSL 瞬断（本轮首次出现；此前 20+ 次推送正常）。已设后台三次重试；若仍失败，网络恢复后 `git push` 即可 |
+| 当前阶段 | **EVOLUTION PHASE 2 十轮完成**（+ Scroll Narrative 正式封装进 motion-system + createScrollNarrative 2 DOM 用例 CI 条件执行） |
+| ⚠️ 推送状态 | **github.com:443 已被网络策略持续封锁**（SSL_ERROR_SYSCALL 持续，连 npm registry 亦被断——环境网络逐块降级）。**本地领先远程 4 个提交未推送**：69db52e（Draco 闭环）/ bacba5a / scroll-narrative 封装 + 依赖纪律提交。网络恢复后 `git push` 一次即同步；断点信息完整在本文件与 CHANGELOG |
 | 新增包 | packages/motion-system（TimelineManager：单一所有权/可取消/自动清理/Reduced Motion；6 单测） |
 | 新增原型 | prototypes/shader-lab（:5177，全十 Shader 可选 Demo + 参数滑杆） |
 | 五 Motion Demo | 登场（新）/电影级聚焦（新，Box3 取景+cinematic）/拆解/复原/场景传送（全部改走 TimelineManager） |
