@@ -15,6 +15,12 @@
 - 5179 端口被游离 preview 进程占用（旧 Playground 实例）——lsof 定位终止重启
 - 实验室 .vue 同样需要 shims-vue（与 F1 同根因）
 
+## [Evolution-2 八轮] 2026-11-05 — Blender Draco → three 解码闭环（PART 2.2/8.5 完成）
+### Added
+- Blender 无头导出 Draco GLB（5.42MB→**2.22MB -59%**，KHR_draco_mesh_compression L6）→ 入库 public/assets/（CC0 衍生件，CREDITS 建档）
+- 旗舰 `?draco=1` 通道：AssetManager dracoDecoderPath=/draco-decoders/（three 解码器 vendored）→ **浏览器实测解码后 3 mesh/108.9K tris 与源件一致，零错误**
+### Fixed
+- **F16**：eslint 挂因＝vendored 1MB 解码器被 lint + 并发 --fix 截断 config——public/** 入 ignores，config 重写
 ## [Evolution-2 七轮] 2026-11-05 — Blender V 级落地 + MUSEUM 主题
 ### Added
 - **Blender 4.x 本机安装（Homebrew）→ tools/blender/inspect_asset.py V 级验证**：无头 ToyCar.glb 检查 4 mesh/108,936 tris（与 gltf-transform 双检一致）/part_id 告警；报告 blender-inspect-ToyCar.json

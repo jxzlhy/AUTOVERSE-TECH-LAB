@@ -18,3 +18,14 @@
 | 质量分级 | C（工程示意模型，modelType=SIMULATED；3 mesh，无独立机械组件） |
 | 核实日期 | 2026-11-05 |
 | 用途 | 资产管线验证、PBR/transmission/clearcoat 渲染验证、GLB 检查工具基准 |
+
+## ToyCar-draco.glb（衍生件）
+
+| 项 | 值 |
+| --- | --- |
+| 来源 | Blender 4.x 无头导出（本仓库 tools/ 流程，源件为上条 CC0 ToyCar.glb） |
+| 许可 | **CC0-1.0**（衍生件随源件） |
+| 压缩 | KHR_draco_mesh_compression level 6 ｜ 5.42MB → **2.22MB（-59%）** |
+| 解码验证 | three DRACOLoader（解码器 vendored 于 public/draco-decoders/，Apache-2.0）— 解码后 3 mesh/108.9K tris 与源件一致 |
+| 用途 | `?draco=1` 通道（PART 2.2/8.5 闭环） |
+| 核实日期 | 2026-11-05 |

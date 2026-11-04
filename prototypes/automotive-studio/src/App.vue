@@ -112,7 +112,9 @@ let effects: EffectManager;
 let perfMonitor: PerformanceMonitor;
 let explodeProxy = { t: 0 };
 let resizeObs: ResizeObserver | null = null;
-const assetManager = new AssetManager();
+let glbUrl = TOYCAR_URL;
+// PART 2.2 闭环：?draco=1 → Blender 导出的 Draco 版 ToyCar（解码器 public/draco-decoders/）
+const assetManager = new AssetManager({ dracoDecoderPath: "/draco-decoders/" });
 
 function setExplode(t: number, animate = false): void {
   const sync = () => {
@@ -357,7 +359,8 @@ async function initApp() {
     onEnter: async () => {
       if (studioRefs.glb || glbLoading.value >= 1) return;
       glbLoading.value = 0;
-      const loaded = await assetManager.loadGLB(TOYCAR_URL, (r) => (glbLoading.value = r));
+      if (new URLSearchParams(location.search).has("draco")) glbUrl = "/assets/ToyCar-draco.glb";
+      const loaded = await assetManager.loadGLB(glbUrl, (r) => (glbLoading.value = r));
       attachGlb(studioRefs, loaded);
       glbStats.value = loaded.stats;
       glbLoading.value = 1;
