@@ -370,7 +370,7 @@ function finish(): void {
       `headlessSuspected=${result.environment.headlessSuspected}\n` +
       `（JSON 已打印到控制台并触发下载）`,
   );
-  console.log("ATL_BENCHMARK_RESULT", json);
+  console.info("ATL_BENCHMARK_RESULT", json);
   if (!params.has("no-download")) {
     const blob = new Blob([json], { type: "application/json" });
     const a = document.createElement("a");

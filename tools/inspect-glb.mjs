@@ -113,7 +113,7 @@ async function main() {
       "modelType=SIMULATED（Khronos 工程示意模型）；mesh 数量多不代表完整拆解（§8.2），部件候选需人工确认。",
   };
 
-  console.log(JSON.stringify(report, null, 2));
+  console.info(JSON.stringify(report, null, 2));
 }
 
 main().catch((err) => {
