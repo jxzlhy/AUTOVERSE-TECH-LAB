@@ -147,3 +147,4 @@ export function instantOrTimeline(
     return { onInstant };
   });
 }
+export { createScrollNarrative, type ScrollStep, type ScrollNarrativeOptions, type ScrollNarrativeHandle } from "./scroll-narrative";
