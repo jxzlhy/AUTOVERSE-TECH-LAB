@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { onBeforeUnmount, onMounted, ref } from "vue";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { colors } from "@atl/shared";
 import {
   AvBadge,
@@ -16,6 +18,32 @@ import {
   AvToast,
   AvTooltip,
 } from "@atl/design-system";
+
+// PART 7 Scroll Narrative（gsap ScrollTrigger + scrub）
+gsap.registerPlugin(ScrollTrigger);
+const narrativeSteps = [
+  { year: "1886", title: "汽车诞生", text: "Karl Benz Patent-Motorwagen——交通文明的第一道车辙。" },
+  { year: "1962", title: "性能纪元", text: "保时捷 901 面世，911 血统由此开始。" },
+  { year: "1981", title: "不锈钢传奇", text: "DeLorean DMC-12 下线，随后成为时间机器。" },
+  { year: "未来", title: "探索不止", text: "AUTOVERSE：一个宇宙，多个世界，无限探索。" },
+];
+let narrativeCtx: gsap.Context | null = null;
+onMounted(() => {
+  narrativeCtx = gsap.context(() => {
+    gsap.utils.toArray<HTMLElement>(".narr-step").forEach((el) => {
+      gsap.fromTo(
+        el,
+        { opacity: 0.15, y: 24 },
+        {
+          opacity: 1,
+          y: 0,
+          scrollTrigger: { trigger: el, start: "top 82%", end: "top 45%", scrub: 0.6 },
+        },
+      );
+    });
+  });
+});
+onBeforeUnmount(() => narrativeCtx?.revert()); // PART 7：可清理
 
 const modalOpen = ref(false);
 const drawerOpen = ref(false);
@@ -183,6 +211,20 @@ const swatches = [
 
     <AvToast v-if="toastMsg" :key="toastSeq" :message="toastMsg" kind="success" />
 
+    <!-- PART 7 Scroll Narrative（ScrollTrigger 滚动叙事 Demo） -->
+    <AvCard title="Scroll Narrative · 滚动叙事" tag="MOTION">
+      <div class="narr-track">
+        <div v-for="st in narrativeSteps" :key="st.year" class="narr-step">
+          <span class="narr-year">{{ st.year }}</span>
+          <div>
+            <h4 class="narr-title">{{ st.title }}</h4>
+            <p class="narr-text">{{ st.text }}</p>
+          </div>
+        </div>
+      </div>
+      <p class="note">gsap ScrollTrigger + scrub；reduced-motion 由 TimelineManager 体系统一裁决（本 Demo 直用 ScrollTrigger，正式接入走 packages/motion-system 封装）。</p>
+    </AvCard>
+
     <footer class="page-foot">
       <span class="kicker">docs/04-design-system · playground v0 · 2026-11-05</span>
     </footer>
@@ -286,4 +328,9 @@ const swatches = [
 .page-foot {
   margin-top: 24px;
 }
+.narr-track { display: flex; flex-direction: column; gap: 26px; padding: 8px 4px; }
+.narr-step { display: flex; gap: 18px; align-items: baseline; }
+.narr-year { font-family: var(--av-font-mono); font-size: 20px; color: var(--av-nexus-500); min-width: 64px; }
+.narr-title { margin: 0 0 4px; font-size: 14px; color: var(--av-text-primary); }
+.narr-text { margin: 0; font-size: 12px; color: var(--av-text-secondary); line-height: 1.7; }
 </style>
