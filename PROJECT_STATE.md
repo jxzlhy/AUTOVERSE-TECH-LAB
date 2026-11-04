@@ -13,6 +13,7 @@
 | 新增包 | packages/motion-system（TimelineManager：单一所有权/可取消/自动清理/Reduced Motion；6 单测） |
 | 新增原型 | prototypes/shader-lab（:5177，全十 Shader 可选 Demo + 参数滑杆） |
 | 五 Motion Demo | 登场（新）/电影级聚焦（新，Box3 取景+cinematic）/拆解/复原/场景传送（全部改走 TimelineManager） |
+| 材质预设产品级 | material-presets 接入旗舰 MAT 行（十预设实时切换+dispose 语义，浏览器实测碳纤维生效） |
 | 承接 Commit | 01e0677 → 本轮最终 SHA 见 docs/09-handoff/EVOLUTION_PHASE_2_REPORT.md |
 | 分支 | main（已推送） |
 | 门禁状态 | lint 0 ｜ typecheck 0 ｜ vitest 19/19 ｜ 六应用 build 全绿 ｜ CI 已配置（push 触发） |
