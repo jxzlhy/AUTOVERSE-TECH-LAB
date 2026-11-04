@@ -1,6 +1,6 @@
 // 本文件在无 jsdom 环境（离线）下自动跳过 DOM 用例——CI 全量执行
 import { describe, expect, it, vi } from "vitest";
-import { TimelineManager, MotionTokens } from "./index";
+import { TimelineManager, MotionTokens, createScrollNarrative } from "./index";
 
 describe("TimelineManager（PHASE 2E PART 7）", () => {
   it("同 key 重放抢占旧 Timeline（单一所有权）", () => {
@@ -61,36 +61,34 @@ describe("TimelineManager（PHASE 2E PART 7）", () => {
 });
 
 const hasJsdom = typeof document !== "undefined" && typeof window !== "undefined";
-describe.skipIf(!hasJsdom)("createScrollNarrative（PART 7 Scroll Narrative 正式封装；DOM 环境运行，CI 全量）", () => {
-  function setupDom(): void {
-    document.body.innerHTML = '<div id="root"><div class="step">A</div><div class="step">B</div></div>';
-  }
-  it("Reduced Motion：直达终态且不注册 ScrollTrigger", () => {
-    setupDom();
-    const h = createScrollNarrative(
-      [
-        { el: "#root .step:nth-child(1)" },
-        { el: "#root .step:nth-child(2)" },
-      ],
-      { reducedMotion: () => true },
-    );
-    expect(h.size).toBe(2);
-    for (const el of document.querySelectorAll(".step")) {
-      expect((el as HTMLElement).style.opacity).toBe("1");
+describe.skipIf(!hasJsdom)(
+  "createScrollNarrative（PART 7 Scroll Narrative 正式封装；DOM 环境运行，CI 全量）",
+  () => {
+    function setupDom(): void {
+      document.body.innerHTML =
+        '<div id="root"><div class="step">A</div><div class="step">B</div></div>';
     }
-    h.destroy();
-  });
+    it("Reduced Motion：直达终态且不注册 ScrollTrigger", () => {
+      setupDom();
+      const h = createScrollNarrative(
+        [{ el: "#root .step:nth-child(1)" }, { el: "#root .step:nth-child(2)" }],
+        { reducedMotion: () => true },
+      );
+      expect(h.size).toBe(2);
+      for (const el of document.querySelectorAll(".step")) {
+        expect((el as HTMLElement).style.opacity).toBe("1");
+      }
+      h.destroy();
+    });
 
-  it("正常模式：注册后 destroy 可清理（gsap.context revert）", () => {
-    setupDom();
-    const h = createScrollNarrative(
-      [
-        { el: "#root .step:nth-child(1)" },
-        { el: "#root .step:nth-child(2)" },
-      ],
-      { reducedMotion: () => false },
-    );
-    expect(h.size).toBe(2);
-    expect(() => h.destroy()).not.toThrow();
-  });
-});
+    it("正常模式：注册后 destroy 可清理（gsap.context revert）", () => {
+      setupDom();
+      const h = createScrollNarrative(
+        [{ el: "#root .step:nth-child(1)" }, { el: "#root .step:nth-child(2)" }],
+        { reducedMotion: () => false },
+      );
+      expect(h.size).toBe(2);
+      expect(() => h.destroy()).not.toThrow();
+    });
+  },
+);

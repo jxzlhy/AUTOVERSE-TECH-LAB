@@ -30,13 +30,18 @@ export interface ScrollNarrativeHandle {
   size: number;
 }
 
-export function createScrollNarrative(steps: ScrollStep[], opts: ScrollNarrativeOptions = {}): ScrollNarrativeHandle {
+export function createScrollNarrative(
+  steps: ScrollStep[],
+  opts: ScrollNarrativeOptions = {},
+): ScrollNarrativeHandle {
   const reduced = opts.reducedMotion ?? systemReducedMotion;
   const fromDefaults: gsap.TweenVars = { opacity: 0.15, y: 24 };
 
   // Reduced Motion：直接置终态，不注册任何 ScrollTrigger（PART 7.3）
   if (reduced()) {
-    const els = steps.map((s) => (typeof s.el === "string" ? document.querySelector(s.el) : s.el)).filter(Boolean) as HTMLElement[];
+    const els = steps
+      .map((s) => (typeof s.el === "string" ? document.querySelector(s.el) : s.el))
+      .filter(Boolean) as HTMLElement[];
     for (const el of els) gsap.set(el, { opacity: 1, y: 0 });
     return { destroy: () => undefined, size: els.length };
   }
@@ -45,7 +50,12 @@ export function createScrollNarrative(steps: ScrollStep[], opts: ScrollNarrative
     for (const s of steps) {
       gsap.fromTo(s.el, s.from ?? fromDefaults, {
         ...(s.to ?? { opacity: 1, y: 0 }),
-        scrollTrigger: { trigger: s.el, start: s.start ?? "top 82%", end: s.end ?? "top 45%", scrub: 0.6 },
+        scrollTrigger: {
+          trigger: s.el,
+          start: s.start ?? "top 82%",
+          end: s.end ?? "top 45%",
+          scrub: 0.6,
+        },
       });
     }
   }, opts.scope);
@@ -57,5 +67,7 @@ export function createScrollNarrative(steps: ScrollStep[], opts: ScrollNarrative
 }
 
 function systemReducedMotion(): boolean {
-  return typeof matchMedia !== "undefined" && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  return (
+    typeof matchMedia !== "undefined" && matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
 }
