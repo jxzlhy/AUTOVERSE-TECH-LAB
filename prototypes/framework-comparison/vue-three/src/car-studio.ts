@@ -92,7 +92,11 @@ export function createCarStudio(
     clearcoatRoughness: 0.06,
   });
   const trim = new THREE.MeshStandardMaterial({ color: "#0F172A", roughness: 0.5, metalness: 0.6 });
-  const rubber = new THREE.MeshStandardMaterial({ color: "#111318", roughness: 0.95, metalness: 0 });
+  const rubber = new THREE.MeshStandardMaterial({
+    color: "#111318",
+    roughness: 0.95,
+    metalness: 0,
+  });
   const glass = new THREE.MeshPhysicalMaterial({
     color: "#0B1220",
     metalness: 0.1,
