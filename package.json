@@ -8,7 +8,8 @@
     "dev": "pnpm --filter './prototypes/**' --parallel dev",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "typecheck": "pnpm exec tsc -p packages/shared && pnpm exec tsc -p packages/three-runtime && cd prototypes/automotive-studio && pnpm exec tsc --noEmit && cd ../framework-comparison/react-r3f && pnpm exec tsc --noEmit"
   },
   "engines": {
     "node": ">=22"
@@ -20,6 +21,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.7",
     "prettier": "^3.9.10",
+    "typescript": "^7.0.2",
     "typescript-eslint": "^8.72.1",
     "vitest": "^5.1.0"
   }

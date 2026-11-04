@@ -80,14 +80,22 @@ describe("SceneManager", () => {
     sm.register({
       id: "a",
       object3D: new THREE.Group(),
-      onEnter: () => calls.push("enter-a"),
-      onExit: () => calls.push("exit-a"),
+      onEnter: () => {
+        calls.push("enter-a");
+      },
+      onExit: () => {
+        calls.push("exit-a");
+      },
     });
     sm.register({
       id: "b",
       object3D: new THREE.Group(),
-      onEnter: () => calls.push("enter-b"),
-      onExit: () => calls.push("exit-b"),
+      onEnter: () => {
+        calls.push("enter-b");
+      },
+      onExit: () => {
+        calls.push("exit-b");
+      },
     });
 
     expect(sm.currentState).toBe("idle");
@@ -135,6 +143,7 @@ describe("SceneManager", () => {
       object3D: new THREE.Group(),
       onEnter: () => {
         sawAStillMounted = root.children.length === 1; // a 尚未被移除
+        return;
       },
     });
     await sm.activate("a");
@@ -168,7 +177,9 @@ describe("SceneManager", () => {
       id: "b",
       object3D: bGroup,
       onEnter: () => new Promise((r) => setTimeout(r, 20)),
-      onExit: () => exitB++,
+      onExit: () => {
+        exitB++;
+      },
     });
     await sm.activate("a");
     const pending = sm.activate("b");

@@ -6,8 +6,9 @@
  * 部件语义识别（车身/车轮等）仅给"候选"（按命名启发式 + 置信度），需人工确认（§8.5 要求）。
  */
 import { readFileSync } from "node:fs";
+// Document 类型未直接使用（NodeIO 内部消费）
 import { basename, resolve } from "node:path";
-import { Document, NodeIO } from "@gltf-transform/core";
+import { NodeIO } from "@gltf-transform/core";
 import { KHRONOS_EXTENSIONS } from "@gltf-transform/extensions";
 
 const NAME_HINTS = [
@@ -20,7 +21,8 @@ const NAME_HINTS = [
 
 function classify(name) {
   for (const hint of NAME_HINTS) {
-    if (hint.patterns.some((p) => p.test(name))) return { candidate: hint.part, confidence: hint.confidence };
+    if (hint.patterns.some((p) => p.test(name)))
+      return { candidate: hint.part, confidence: hint.confidence };
   }
   return null;
 }

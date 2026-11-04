@@ -72,7 +72,9 @@ export class SceneManager {
     if (gen !== this.generation) {
       // 已被 cancelPending()/更新的流程取代：回滚本次 prepare 的可见部分
       this.root.remove(next.object3D);
-      await Promise.resolve(next.onExit?.({ root: next.object3D, delta: this.delta })).catch(() => {});
+      await Promise.resolve(next.onExit?.({ root: next.object3D, delta: this.delta })).catch(
+        () => {},
+      );
       return;
     }
 
