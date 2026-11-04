@@ -17,3 +17,9 @@ export {
   type InspectorRow,
 } from "./components/engineering/AvInspector.vue";
 export { default as AvAnnotation } from "./components/engineering/AvAnnotation.vue";
+export { default as AvDropdown } from "./components/core/AvDropdown.vue";
+export { default as AvTooltip } from "./components/core/AvTooltip.vue";
+export { default as AvDrawer } from "./components/core/AvDrawer.vue";
+export { default as AvSearch } from "./components/core/AvSearch.vue";
+export { default as AvSelect } from "./components/core/AvSelect.vue";
+export { default as AvNav } from "./components/core/AvNav.vue";

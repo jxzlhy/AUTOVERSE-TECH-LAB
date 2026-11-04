@@ -1,9 +1,27 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { colors } from "@atl/shared";
-import { AvBadge, AvButton, AvCard, AvInput, AvModal, AvTabs, AvToast } from "@atl/design-system";
+import {
+  AvBadge,
+  AvButton,
+  AvCard,
+  AvDrawer,
+  AvDropdown,
+  AvInput,
+  AvModal,
+  AvNav,
+  AvSearch,
+  AvSelect,
+  AvTabs,
+  AvToast,
+  AvTooltip,
+} from "@atl/design-system";
 
 const modalOpen = ref(false);
+const drawerOpen = ref(false);
+const searchQ = ref("");
+const selBrand = ref("delorean");
+const navActive = ref("home");
 const name = ref("");
 const badEmail = ref("not-an-email");
 const toastMsg = ref<string | null>(null);
@@ -92,6 +110,50 @@ const swatches = [
         <p class="note">Esc / 点击遮罩关闭；打开时锁定背景滚动。</p>
       </AvCard>
     </div>
+
+    <!-- CORE UI v0.2：Dropdown/Tooltip/Drawer/Search/Select/Nav -->
+    <AvCard title="CORE UI v0.2 · Dropdown / Tooltip / Drawer / Search / Select / Nav" tag="CORE UI">
+      <div class="row" style="margin-bottom: 12px">
+        <AvDropdown
+          label="排序"
+          :items="[
+            { id: 'year', label: '按年代' },
+            { id: 'brand', label: '按品牌' },
+            { id: 'type', label: '按类型' },
+          ]"
+          @select="(id: string) => (navActive = id)"
+        />
+        <AvTooltip text="展品类型在数据层显式区分">
+          <AvBadge kind="FICTION" />
+        </AvTooltip>
+        <AvButton @click="drawerOpen = true">打开抽屉</AvButton>
+      </div>
+      <div class="row" style="margin-bottom: 12px">
+        <AvSearch v-model="searchQ" style="max-width: 280px" @search="(v: string) => (searchQ = v)" />
+        <AvSelect
+          v-model="selBrand"
+          label="品牌"
+          :options="[
+            { value: 'delorean', label: 'DeLorean' },
+            { value: 'porsche', label: 'Porsche' },
+            { value: 'ferrari', label: 'Ferrari' },
+          ]"
+        />
+      </div>
+      <AvNav
+        :items="[
+          { id: 'home', label: '首页' },
+          { id: 'museum', label: '文明博物馆' },
+          { id: 'legends', label: '传奇馆' },
+        ]"
+        :active-id="navActive"
+        @navigate="(id: string) => (navActive = id)"
+      />
+    </AvCard>
+
+    <AvDrawer :open="drawerOpen" title="展品操作台" @close="drawerOpen = false">
+      <p>ENGINEERING 操作入口将挂接在此（零件树/剖切/标注）。</p>
+    </AvDrawer>
 
     <!-- Tabs + Toast -->
     <AvCard title="Tabs & Toast" tag="CORE UI v0.1">
