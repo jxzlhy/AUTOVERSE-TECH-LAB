@@ -7,21 +7,8 @@ export type Certainty =
   "OFFICIAL" | "VERIFIED" | "RESEARCHED" | "SIMULATED" | "RECONSTRUCTED" | "UNVERIFIED";
 export type ContentClass = "REALITY" | "FICTION" | "FUTURE";
 
-export interface KnowledgeNode {
-  id: string;
-  label: string;
-  kind: "vehicle" | "brand" | "component" | "material" | "film" | "culture";
-  layer: ContentClass;
-  certainty: Certainty;
-  source: string;
-  blurb: string;
-}
-
-export interface KnowledgeEdge {
-  from: string;
-  to: string;
-  rel: string;
-}
+export type KnowledgeNode = Entity;
+export type KnowledgeEdge = Relation;
 
 export const NODES: KnowledgeNode[] = [
   {
@@ -89,15 +76,13 @@ export const NODES: KnowledgeNode[] = [
   },
 ];
 
-export const EDGES: KnowledgeEdge[] = [
-  { from: "time-machine", to: "dmc12", rel: "基于改装" },
-  { from: "time-machine", to: "bttf", rel: "出现于" },
-  { from: "dmc12", to: "delorean-brand", rel: "由制造" },
-  { from: "dmc12", to: "gullwing", rel: "采用部件" },
-  { from: "dmc12", to: "stainless", rel: "车身材质" },
-  { from: "bttf", to: "film-culture", rel: "属于" },
-  { from: "time-machine", to: "film-culture", rel: "成为符号" },
-];
+export const GRAPH = new DomainGraph().addAll(NODES).relateAll(
+  EDGES.map((e) => ({
+    ...e,
+    certainty: "VERIFIED" as const,
+    source: "公开资料（详见各节点 source）",
+  })),
+);
 
 /** 从某节点出发的关联链（含直接邻居），供关系链 UI 消费 */
 export function relatedFrom(
