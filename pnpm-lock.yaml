@@ -55,6 +55,15 @@ importers:
         specifier: ^3.5.44
         version: 3.5.44(typescript@6.0.3)
 
+  packages/motion-system:
+    dependencies:
+      '@atl/shared':
+        specifier: workspace:*
+        version: link:../shared
+      gsap:
+        specifier: ^3.15.1
+        version: 3.15.1
+
   packages/shared: {}
 
   packages/three-runtime:

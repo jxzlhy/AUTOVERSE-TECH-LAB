@@ -1,0 +1,13 @@
+{
+  "name": "@atl/motion-system",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@atl/shared": "workspace:*",
+    "gsap": "^3.15.1"
+  }
+}
