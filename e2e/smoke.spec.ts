@@ -18,7 +18,7 @@ test.describe("Design Playground", () => {
     await expect(page.getByText("Color Tokens")).toBeVisible();
     // 按钮矩阵与语义徽标
     await expect(page.getByRole("button", { name: "主要操作" })).toBeVisible();
-    await expect(page.getByText("REAL")).toBeVisible();
+    await expect(page.getByText("REAL", { exact: true })).toBeVisible();
     // Modal：打开 → Esc 关闭
     await page.getByRole("button", { name: "打开对话框" }).click();
     await expect(page.getByRole("dialog")).toBeVisible();

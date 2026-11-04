@@ -15,6 +15,11 @@ export default defineConfig({
   use: {
     baseURL: "http://localhost",
     trace: "retain-on-failure",
+    // F17：本机 CDN 封锁导致 1.64 需要的 chromium-1248 不可下载；
+    // 复用缓存中已有的 chromium-1228 完整浏览器（executablePath 绕过版本校验）。
+    launchOptions: {
+      executablePath: `${process.env.HOME}/Library/Caches/ms-playwright/chromium-1228/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing`,
+    },
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer: [
