@@ -3,6 +3,8 @@ import { onBeforeUnmount, onMounted, ref } from "vue";
 import gsap from "gsap";
 import * as THREE from "three";
 import { PAINT_PRESETS } from "@atl/shared";
+import { AvHoloPanel, AvPartsTree, AvSceneSelector, AvToggle, type PartNode } from "@atl/design-system";
+import { SectionController, XRayController } from "@atl/three-runtime";
 import {
   AssetManager,
   CameraController,
@@ -37,6 +39,15 @@ const perf = ref<PerfSnapshot>({ fps: 0, frameTimeMs: 0, drawCalls: 0, triangles
 const glbLoading = ref(0); // -1 = 未开始/完成态之外
 const glbStats = ref<LoadedGlb["stats"] | null>(null);
 const fatal = ref<string | null>(null);
+// —— ENGINEERING UI 状态（PHASE 2D §5.3）——
+const xrayOn = ref(false);
+const wireframeOn = ref(false);
+const sectionOn = ref(false);
+const sectionT = ref(0);
+const selectedPartId = ref<string | null>(null);
+let xray: XRayController | null = null;
+let section: SectionController | null = null;
+let wireframeSaved = new Map<THREE.Mesh, boolean>();
 
 // —— 运行时句柄 ——
 let renderer: THREE.WebGLRenderer;
@@ -107,6 +118,71 @@ function choosePaint(id: string): void {
   studioRefs.setPaint(PAINT_PRESETS.find((p) => p.id === id)?.color ?? "#22D3EE");
 }
 
+const partNodes = ref<PartNode[]>([]);
+
+function buildPartTree(): void {
+  // 从程序化车部件推导零件树（hub 归属对应 wheel 之下）
+  const nodes: PartNode[] = [];
+  for (const id of studioRefs.car.parts.keys()) {
+    const hub = id.startsWith("hub-");
+    nodes.push({ id, label: hub ? `└ ${id.replace("hub-", "hub ")}` : id, depth: hub ? 1 : 0 });
+  }
+  partNodes.value = nodes;
+}
+
+function toggleXray(v: boolean): void {
+  xrayOn.value = v;
+  if (!studioRefs) return;
+  if (v) xray?.apply(studioRefs.group);
+  else xray?.restore(studioRefs.group);
+}
+
+function toggleWireframe(v: boolean): void {
+  wireframeOn.value = v;
+  if (!studioRefs) return;
+  if (v) {
+    studioRefs.group.traverse((obj) => {
+      const mesh = obj as THREE.Mesh;
+      if (mesh.isMesh) {
+        const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+        for (const mat of mats) {
+          wireframeSaved.set(mesh, mat.wireframe);
+          mat.wireframe = true;
+        }
+      }
+    });
+  } else {
+    for (const [mesh, original] of wireframeSaved) mesh.material && ((mesh.material as THREE.Material).wireframe = original);
+    wireframeSaved.clear();
+  }
+}
+
+function toggleSection(v: boolean): void {
+  sectionOn.value = v;
+  if (!renderer || !studioRefs) return;
+  if (v) {
+    section?.attach(renderer, studioRefs.group, { min: -6, max: 4 });
+    section?.setProgress(sectionT.value);
+  } else {
+    section?.detach();
+  }
+}
+
+function onSectionSlide(v: number): void {
+  sectionT.value = v;
+  if (sectionOn.value) section?.setProgress(v);
+}
+
+function selectPart(id: string): void {
+  selectedPartId.value = id;
+  selectedPart.value = id;
+  const part = studioRefs?.car.parts.get(id);
+  if (part && cameraRig) {
+    cameraRig.frameObject(part.mesh, { padding: 2.2 });
+    interaction.setEnabled(true);
+  }
+}
+
 function toggleBloom(): void {
   bloomOn.value = !bloomOn.value;
   effects.setBloom(bloomOn.value);
@@ -156,6 +232,8 @@ async function initApp() {
   cameraRig.camera.position.set(6.5, 3, 7.5);
 
   lighting = new LightingManager(scene, renderer, "STUDIO");
+  xray = new XRayController();
+  section = new SectionController();
 
   // 场景注册
   studioRefs = buildStudioScene(paintId.value);
@@ -211,6 +289,7 @@ async function initApp() {
 
   // 首场景进入
   await sceneManager.activate("studio");
+  buildPartTree();
   cameraRig.frameObject(studioRefs.group, { padding: 1.28 });
 
   // 主循环
@@ -230,6 +309,9 @@ onBeforeUnmount(() => {
   canvasRef.value?.removeEventListener("webglcontextlost", onContextLost);
   canvasRef.value?.removeEventListener("webglcontextrestored", onContextRestored);
   gsap.killTweensOf(explodeProxy); // PHASE 2A §2.6：动画实例不跨生命周期累积
+  xray?.dispose();
+  section?.detach();
+  wireframeSaved.clear();
   renderer?.setAnimationLoop(null);
   resizeObs?.disconnect();
   interaction?.dispose();
@@ -259,24 +341,16 @@ onBeforeUnmount(() => {
         <span class="kicker">AUTOVERSE TECH LAB</span>
         <h1 class="title">Automotive Studio ｜ 旗舰整合原型</h1>
       </div>
-      <nav class="scene-tabs" aria-label="空间切换">
-        <button
-          class="tab"
-          :class="{ active: activeScene === 'studio' }"
-          :disabled="switching"
-          @click="goScene('studio')"
-        >
-          摄影棚
-        </button>
-        <button
-          class="tab"
-          :class="{ active: activeScene === 'energy' }"
-          :disabled="switching"
-          @click="goScene('energy')"
-        >
-          能量空间
-        </button>
-      </nav>
+      <AvSceneSelector
+        aria-label="空间切换"
+        :scenes="[
+          { id: 'studio', label: '摄影棚', hint: 'STUDIO' },
+          { id: 'energy', label: '能量空间', hint: 'ENERGY' },
+        ]"
+        :active-id="activeScene"
+        :disabled="switching"
+        @select="(id: string) => goScene(id as 'studio' | 'energy')"
+      />
     </header>
 
     <!-- 左下：灯光 / 车漆 / 视角 -->
@@ -326,13 +400,37 @@ onBeforeUnmount(() => {
       <p v-if="glbLoading >= 0 && glbLoading < 1" class="loading-note">
         ToyCar.glb 加载中 {{ Math.round(glbLoading * 100) }}%
       </p>
+      <div class="eng-panel" aria-label="工程面板">
+        <span class="control-label">PARTS</span>
+        <AvPartsTree
+          class="eng-tree"
+          :parts="partNodes"
+          :selected-id="selectedPartId"
+          @select="selectPart"
+        />
+        <div class="eng-toggles">
+          <AvToggle v-model="xrayOn" label="X-RAY" @update:model-value="toggleXray" />
+          <AvToggle v-model="wireframeOn" label="WIRE" @update:model-value="toggleWireframe" />
+          <AvToggle v-model="sectionOn" label="SECTION" @update:model-value="toggleSection" />
+        </div>
+        <div v-if="sectionOn" class="control-row">
+          <span class="control-label">剖面</span>
+          <input
+            class="slider"
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            :value="sectionT"
+            aria-label="剖切进度"
+            @input="onSectionSlide(Number(($event.target as HTMLInputElement).value))"
+          />
+        </div>
+      </div>
     </section>
 
     <!-- 部件铭牌 -->
-    <aside v-if="selectedPart" class="hud plaque" role="status">
-      <span class="plaque-kicker">PART</span>
-      <strong>{{ selectedPart }}</strong>
-    </aside>
+    <AvHoloPanel v-if="selectedPart" class="hud plaque" kicker="PART" :title="selectedPart" />
 
     <!-- 右下：性能读数 -->
     <footer class="hud zone-bottom-right stats" aria-live="off">

@@ -47,9 +47,10 @@
 ## 3. 编码约定
 
 - **语言**：TypeScript 优先；文档用中文（技术名词保留英文）。
-- **目录**：研究文档进 `docs/`；可运行验证进 `prototypes/`；一次性脚本进 `experiments/`；报告进 `reports/`。
+- **目录**：研究文档进 `docs/`；可运行验证进 `prototypes/`；**可复用代码进 `packages/`**（shared/three-runtime/design-system）；一次性脚本进 `experiments/`；工具进 `tools/`；报告进 `reports/`。
+- **Runtime 纪律**：引擎改动必须走 `packages/three-runtime` 并补单测；两阶段场景激活、解码器门控、ResourceLedger 所有权语义不得回退（见 DECISION_LOG）。
 - **3D Runtime 与业务 UI 解耦**：场景代码不得直接引用 UI 框架组件；通信走明确的接口层（事件/store），模式见 `docs/02-architecture/`。
-- **性能红线**：任何原型默认挂 FPS/draw call 显示；提交性能结论必须附实测环境说明（设备、浏览器、分辨率）。
+- **性能红线**：任何原型默认挂 FPS/draw call 显示；提交性能结论必须附实测环境说明（设备、浏览器、分辨率）；GPU 显存不可测即标注 NOT_MEASURABLE，禁止伪造。
 - **文件命名**：kebab-case；文档带编号前缀时遵循现有体系。
 
 ## 4. 阻塞与上报

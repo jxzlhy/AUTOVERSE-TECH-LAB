@@ -45,6 +45,8 @@ AI 代理在本仓库采用**自主规划 + 持续迭代**模式：
 | 提交信息 | `<type>: <说明>`，type ∈ docs/feat/fix/refactor/perf/test/chore |
 | 提交前检查 | `git diff --staged` 确认无敏感信息、无构建产物、无 node_modules |
 | 推送 | 每阶段至少 push 一次；禁止 force push |
+| CI | push/PR 触发 `.github/workflows/ci.yml`（quality：lint→typecheck→test→build；e2e：Chromium 冒烟）。**CI 结果确认需经 GitHub 网页（本机 api.github.com 受网络策略拦截）** |
+| 断点续跑 | 会话恢复以 `PROJECT_STATE.md` 为唯一入口；资源将尽时先更新该文件再结束 |
 | 敏感文件 | `.env*`、密钥、Token 一律不进库；提供 `.env.example`（仅键名） |
 | 大文件 | >10MB 二进制先评估 Git LFS 或改为引用外部资源 |
 

@@ -39,12 +39,34 @@
 
 ```bash
 pnpm install
-pnpm --filter @atl/proto-vue-three build && pnpm --filter @atl/proto-vue-three preview    # :5171
-pnpm --filter @atl/proto-react-r3f build && pnpm --filter @atl/proto-react-r3f preview    # :5172
-pnpm --filter @atl/proto-vue-babylon build && pnpm --filter @atl/proto-vue-babylon preview # :5173
+pnpm --filter @atl/proto-automotive-studio build && pnpm --filter @atl/proto-automotive-studio preview  # :5174 旗舰原型
+pnpm --filter @atl/proto-design-playground build && pnpm --filter @atl/proto-design-playground preview  # :5175 设计系统
+pnpm --filter @atl/proto-performance-benchmark build && pnpm --filter @atl/proto-performance-benchmark preview  # :5176 性能基准
 ```
 
+对照组原型（framework-comparison）：:5171（vue-three）/ :5172（react-r3f）/ :5173（vue-babylon）。
+
 要求：Node ≥ 22，pnpm ≥ 12。
+
+## 工程门禁与 CI
+
+```bash
+pnpm run lint        # ESLint 9 flat（TS 6 side-by-side，DL-006）
+pnpm run typecheck   # TS 原生 tsc（包内为 TS 7）
+pnpm run test        # Vitest 单元测试
+pnpm run build:all   # 全应用构建
+pnpm run e2e         # Playwright 冒烟（浏览器安装受本机网络策略限制，执行环境为 CI，DL-007）
+```
+
+CI：`.github/workflows/ci.yml`（quality job + e2e job），push/PR 触发。
+
+## packages 体系
+
+| 包 | 职责 |
+| --- | --- |
+| `packages/shared` | Design Tokens 代码化单一事实来源 |
+| `packages/three-runtime` | 引擎内核（SceneManager 两阶段激活/AssetManager 解码器门控/LightingManager×5/Interaction/Effect/PerformanceMonitor/ResourceDisposer+ResourceLedger/Shader Library） |
+| `packages/design-system` | CORE UI（v0.1）+ SPATIAL/ENGINEERING UI 组件（进化中） |
 
 ## 目录结构
 

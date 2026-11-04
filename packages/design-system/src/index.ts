@@ -5,3 +5,7 @@ export { default as AvBadge } from "./components/AvBadge.vue";
 export { default as AvModal } from "./components/AvModal.vue";
 export { default as AvTabs } from "./components/AvTabs.vue";
 export { default as AvToast } from "./components/AvToast.vue";
+export { default as AvPartsTree, type PartNode } from "./components/engineering/AvPartsTree.vue";
+export { default as AvToggle } from "./components/engineering/AvToggle.vue";
+export { default as AvSceneSelector } from "./components/spatial/AvSceneSelector.vue";
+export { default as AvHoloPanel } from "./components/spatial/AvHoloPanel.vue";

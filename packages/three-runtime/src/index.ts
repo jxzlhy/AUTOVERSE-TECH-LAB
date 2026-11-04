@@ -22,3 +22,4 @@ export {
   makeEnergyFlowMaterial,
   type ShaderHandle,
 } from "./shader-library";
+export { XRayController, SectionController, type SectionRange } from "./engineering";
