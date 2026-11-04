@@ -23,7 +23,7 @@
 | @vitejs/plugin-react | ^6.2.1 | MIT | React 插件 | — | — | ✅ 在用 |
 | typescript | ^7.0.2 | Apache-2.0 | 类型系统 | 严格模式 | ⚠️ F1：vue-tsc 未适配 | ✅ 在用 |
 | vue-tsc | ^3.1.0 | MIT | Vue 类型检查 | 门禁 | ⚠️ 与 TS7 不兼容（F1），门禁暂缺 | ⚠️ 受限使用 |
-| @types/three | ^0.187.0 | MIT | three 类型 | — | three 自带类型为主，此为补充 | ✅ 在用 |
+| @types/three | ^0.187.0 | MIT | three 类型 | — | **E 代理核实：three npm 包不自带类型，本包必需**；addons 类型不保证全覆盖 | ✅ 在用 |
 | @types/react(-dom) | ^19.2.0 | MIT | React 类型 | — | — | ✅ 在用 |
 | @pmndrs/assets | ^1.7.0 | — | pmndrs 官方资产（备用） | — | 未实际引入任何包 | 🔍 观察清单 |
 | stats-gl | 4.2.3 | — | 3D 性能面板（备选） | — | 原型暂用自研 HUD；benchmark 时评估 | 🔍 观察清单 |

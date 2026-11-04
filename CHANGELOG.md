@@ -18,7 +18,8 @@
   - `state-management.md`（Pinia 4.1 / Zustand 5 vanilla 桥接 / Jotai / RTK / TanStack Query）
   - `3d-engines.md`（three r187 / R3F 9.8 / TresJS 5.10 / Babylon 9.33；24 项核实记录）
   - `animation-systems.md`（GSAP 3.15 免费商用核实 / Motion→motion-v / AnimationMixer / 转场方案）
-  - `visual-techniques.md`（PBR/IBL/后期/TSL/WebGPU/粒子——视觉技术研究）
+  - `visual-techniques.md`（PBR/IBL/后期/TSL/WebGPU/粒子：官方车漆配方、r183 RenderPipeline 更名、postprocessing 为 Zlib 许可且 peer three<0.188）
+  - `engineering-stack.md`（Vite 8+Rolldown/TS7/资源加载管线/测试策略/性能监控/WebGL2 覆盖率）
   - `tech-selection-comparison.md`：选型比较总报告（ADR-001~005）
 - **设计系统**
   - `docs/04-design-system/design-system.md` v1.0：三条 UI 线（CORE/SPATIAL/ENGINEERING）、Design Tokens（色彩/字体/间距/动效）、Glass/HUD/Motion/响应式/无障碍/组件基线
