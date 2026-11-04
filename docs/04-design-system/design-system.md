@@ -159,7 +159,7 @@ AUTOVERSE 的视觉语言关键词：**汽车文明 × 数字宇宙 × 展馆感
 | `bp-desktop` | ≥ 1280px | 完整体验 |
 
 - 3D 画布 DPR 上限：`min(devicePixelRatio, 2)`；
-- 移动端性能预算见 `docs/07-performance/`（建立后链接）。
+- 移动端性能预算见 [docs/07-performance/performance-research.md](../07-performance/performance-research.md) §2（预算框架 v0）。
 
 ## 7. 组件指南（基线清单）
 
