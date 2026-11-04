@@ -466,7 +466,7 @@ if (autostart) {
 } else {
   renderUI(
     `ATL Performance Benchmark\n` +
-      `scenario=${scenarioId}（A/B/C/D/E/F/G/H/I/J）duration=${durationSec}s\n` +
+      `scenario=${scenarioId}（A…K 全场景）duration=${durationSec}s\n` +
       `添加 &autostart=1 开始；结果 JSON 自动下载。\n` +
       `⚠ headless/软件渲染结果不代表真实 GPU 性能，请用日常浏览器执行。`,
   );
