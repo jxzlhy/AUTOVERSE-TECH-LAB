@@ -1,5 +1,4 @@
 import { describe, expect, it, vi } from "vitest";
-import gsap from "gsap";
 import { TimelineManager, MotionTokens } from "./index";
 
 describe("TimelineManager（PHASE 2E PART 7）", () => {
