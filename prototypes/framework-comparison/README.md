@@ -27,7 +27,7 @@
 | --- | --- | --- | --- |
 | vue-three | ✅ 291ms | ⚠️ vue-tsc 不可用（见 §5-F1） | 634.13 kB（gzip 165.97 kB） |
 | react-r3f | ✅ 219–232ms | ✅ `tsc --noEmit` 0 错误 | ≈634 kB（gzip ≈166 kB） |
-| vue-babylon | ✅ 802–826ms | ⚠️ vue-tsc 不可用（同 F1） | ≈1.4 MB（gzip 待复测） |
+| vue-babylon | ✅ 802–826ms | ⚠️ vue-tsc 不可用（同 F1） | 入口 gzip ≈1365 kB（根导入 @babylonjs/core 未摇树；深路径导入可优化，属 Babylon DX 成本） |
 
 工具链事实：Vite 8.3.5 已内置 Rolldown（构建日志出现 `build.rolldownOptions`）；三应用 build 全部 <1s。
 
