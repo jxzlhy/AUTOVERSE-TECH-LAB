@@ -1,0 +1,13 @@
+{
+  "name": "autoverse-tech-lab",
+  "private": true,
+  "version": "0.1.0",
+  "description": "AUTOVERSE TECH LAB — 技术研究中心 / 架构验证平台 / 设计规范库 / AI 开发知识库",
+  "scripts": {
+    "build": "pnpm -r --filter './prototypes/**' build",
+    "dev": "pnpm --filter './prototypes/**' --parallel dev"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
