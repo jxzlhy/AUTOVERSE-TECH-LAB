@@ -91,6 +91,40 @@ export class TimelineManager {
     return n;
   }
 
+  /**
+   * 播放并等待完成（转场时序用）。Reduced Motion：onInstant 后立即 resolve。
+   * 取消（cancel/cancelAll/抢占）会使 Promise 永不 resolve——调用方需自行用 Promise.race 超时保护。
+   */
+  playAsync(
+    key: string,
+    build: (t: gsap.core.Timeline) => void | gsap.core.Timeline | { onInstant?: () => void },
+  ): Promise<void> {
+    return new Promise((resolve) => {
+      let settled = false;
+      const settle = () => {
+        if (!settled) {
+          settled = true;
+          resolve();
+        }
+      };
+      if (this.reduced()) {
+        const result = build(gsap.timeline({ paused: true }));
+        if (result && "onInstant" in result) result.onInstant?.();
+        settle();
+        return;
+      }
+      const tl = gsap.timeline({
+        onComplete: () => {
+          this.active.delete(key);
+          settle();
+        },
+      });
+      build(tl);
+      this.active.set(key, tl);
+      void settle;
+    });
+  }
+
   /** 对指定目标对象的全部补间兜底清理（防第三方直接 gsap.to 的泄漏） */
   killTweensOf(target: gsap.TweenTarget): void {
     gsap.killTweensOf(target);
