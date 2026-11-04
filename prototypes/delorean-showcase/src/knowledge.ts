@@ -2,11 +2,12 @@
  * DeLorean 知识关系链（PART 2.5 全局探索系统 → PART 9.3 专题页数据层）
  * 链示例（总纲 §2.5）：Time Machine → DMC-12 → 鸥翼门 → 不锈钢车身 → 影视汽车文化
  * 数据可信度与来源标注为必填（PART 9.6 可信度分级）——UI 不展示无来源断言。
+ * 数据层基于 @atl/shared DomainGraph（PART 10 共享查询层）。
  */
-export type Certainty =
-  "OFFICIAL" | "VERIFIED" | "RESEARCHED" | "SIMULATED" | "RECONSTRUCTED" | "UNVERIFIED";
-export type ContentClass = "REALITY" | "FICTION" | "FUTURE";
+import { DomainGraph, type Entity, type Relation } from "@atl/shared";
 
+export type Certainty = Entity["certainty"];
+export type ContentClass = Entity["layer"];
 export type KnowledgeNode = Entity;
 export type KnowledgeEdge = Relation;
 
@@ -74,6 +75,77 @@ export const NODES: KnowledgeNode[] = [
     source: "LEGENDS UNIVERSE 世界观研究",
     blurb: "影视载具作为文化符号的收藏与展示谱系（James Bond/Batman/Knight Rider…）。",
   },
+  // ---- LEGENDS UNIVERSE 铺量（PART 9.3 片单）----
+  {
+    id: "bond-franchise",
+    label: "James Bond 系列",
+    kind: "film",
+    layer: "FICTION",
+    certainty: "VERIFIED",
+    source: "EON Productions 公开资料",
+    blurb: "007 系列：Aston Martin DB5 是系列最标志性载具。",
+  },
+  {
+    id: "db5",
+    label: "Aston Martin DB5",
+    kind: "vehicle",
+    layer: "FICTION",
+    certainty: "VERIFIED",
+    source: "EON Productions/官方公开资料",
+    blurb: "Bond 座驾：真实车型经影视道具改装（武器/弹射椅均为虚构装置）。",
+  },
+  {
+    id: "batman-franchise",
+    label: "Batman 系列",
+    kind: "film",
+    layer: "FICTION",
+    certainty: "VERIFIED",
+    source: "DC/Warner Bros. 公开资料",
+    blurb: "蝙蝠侠系列：Batmobile 各代设计差异极大（影视改编史的一部分）。",
+  },
+  {
+    id: "batmobile",
+    label: "Batmobile",
+    kind: "vehicle",
+    layer: "FICTION",
+    certainty: "VERIFIED",
+    source: "DC/Warner Bros. 公开资料",
+    blurb: "蝙蝠车：完全虚构载具（无真实车型基底——与 DB5 相反案例）。",
+  },
+  {
+    id: "knight-rider",
+    label: "Knight Rider",
+    kind: "film",
+    layer: "FICTION",
+    certainty: "VERIFIED",
+    source: "NBC 公开资料",
+    blurb: "霹雳游侠：KITT——Pontiac Trans Am 改装的 AI 车（真实基底+虚构智能）。",
+  },
+  {
+    id: "kitt",
+    label: "KITT",
+    kind: "vehicle",
+    layer: "FICTION",
+    certainty: "VERIFIED",
+    source: "NBC 公开资料",
+    blurb: "虚构智能车载：真实 Trans Am 基底（与 Batmobile 相反案例）。",
+  },
+];
+
+const EDGES: Array<Pick<KnowledgeEdge, "from" | "to" | "rel">> = [
+  { from: "time-machine", to: "dmc12", rel: "基于改装" },
+  { from: "time-machine", to: "bttf", rel: "出现于" },
+  { from: "dmc12", to: "delorean-brand", rel: "由制造" },
+  { from: "dmc12", to: "gullwing", rel: "采用部件" },
+  { from: "dmc12", to: "stainless", rel: "车身材质" },
+  { from: "bttf", to: "film-culture", rel: "属于" },
+  { from: "time-machine", to: "film-culture", rel: "成为符号" },
+  { from: "bond-franchise", to: "film-culture", rel: "属于" },
+  { from: "bond-franchise", to: "db5", rel: "标志载具" },
+  { from: "batman-franchise", to: "film-culture", rel: "属于" },
+  { from: "batman-franchise", to: "batmobile", rel: "标志载具" },
+  { from: "knight-rider", to: "film-culture", rel: "属于" },
+  { from: "knight-rider", to: "kitt", rel: "标志载具" },
 ];
 
 export const GRAPH = new DomainGraph().addAll(NODES).relateAll(
@@ -88,15 +160,5 @@ export const GRAPH = new DomainGraph().addAll(NODES).relateAll(
 export function relatedFrom(
   id: string,
 ): { node: KnowledgeNode; rel: string; direction: "out" | "in" }[] {
-  const out = EDGES.filter((e) => e.from === id).map((e) => ({
-    node: NODES.find((n) => n.id === e.to)!,
-    rel: e.rel,
-    direction: "out" as const,
-  }));
-  const inn = EDGES.filter((e) => e.to === id).map((e) => ({
-    node: NODES.find((n) => n.id === e.from)!,
-    rel: e.rel,
-    direction: "in" as const,
-  }));
-  return [...out, ...inn].filter((r) => r.node);
+  return GRAPH.related(id).map((r) => ({ node: r.entity, rel: r.rel, direction: r.direction }));
 }

@@ -48,6 +48,15 @@
 - **knowledge.ts**：8 节点/7 边知识图谱数据层（Time Machine→DMC-12→鸥翼门→不锈钢车身→影视文化），每节点带 layer(REALITY/FICTION)+certainty(OFFICIAL…UNVERIFIED)+source 三标注
 - **关系链 UI**（delorean-showcase）：链根跳转（点击节点探索）+ 双向关系箭头 + REAL/FICTION 徽标 + 来源可信度展示——浏览器实测 Time Machine→DMC-12 跳转与 4 关联渲染
 - 域模型即 domain-engine 前身：静态数据验证 PART 10「先数据模型后后端」原则
+## [Evolution-2 十七轮] 2026-11-05 — LEGENDS UNIVERSE 铺量 + F18 潜在缺陷修复
+### Added
+- **知识图谱铺量 13 节点/13 边**：James Bond 系列+DB5 / Batman 系列+Batmobile / Knight Rider+KITT（含"真实基底 vs 完全虚构"对照案例标注，PART 9.3）
+### Fixed
+- **F18 潜在运行时缺陷**：第 15 轮迁移脚本静默丢失 DomainGraph/Entity/Relation 导入与 EDGES 声明（vite 构建不查类型漏网；本机 never 浏览器复验该页）——全文件重写修复
+- **typecheck 覆盖缺口**：delorean-showcase 纳入根 typecheck（此前无门禁）；.npmrc hoist 供 CI
+### Verified
+- 浏览器实测：DomainGraph 迁移后关系链正常（Time Machine 链根 3 邻居/徽标/来源三标注）
+- 全门禁：lint 0 / typecheck 0（覆盖面扩大）/ vitest 31+2 / 九应用 build 全绿
 ## [Evolution-2 七轮] 2026-11-05 — Blender V 级落地 + MUSEUM 主题
 ### Added
 - **Blender 4.x 本机安装（Homebrew）→ tools/blender/inspect_asset.py V 级验证**：无头 ToyCar.glb 检查 4 mesh/108,936 tris（与 gltf-transform 双检一致）/part_id 告警；报告 blender-inspect-ToyCar.json

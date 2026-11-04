@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "vitest run",
-    "typecheck": "pnpm exec tsc -p packages/shared && pnpm exec tsc -p packages/three-runtime && pnpm exec tsc -p packages/motion-system && cd prototypes/automotive-studio && pnpm exec tsc -p tsconfig.json --noEmit && cd ../performance-benchmark && pnpm exec tsc -p tsconfig.json --noEmit && cd ../framework-comparison/react-r3f && pnpm exec tsc -p tsconfig.json --noEmit",
+    "typecheck": "pnpm exec tsc -p packages/shared && pnpm exec tsc -p packages/three-runtime && pnpm exec tsc -p packages/motion-system && cd prototypes/automotive-studio && pnpm exec tsc -p tsconfig.json --noEmit && cd ../delorean-showcase && pnpm exec tsc -p tsconfig.json --noEmit && cd ../performance-benchmark && pnpm exec tsc -p tsconfig.json --noEmit && cd ../framework-comparison/react-r3f && pnpm exec tsc -p tsconfig.json --noEmit",
     "e2e": "playwright test --config e2e/playwright.config.ts",
     "build:all": "pnpm -r --filter './prototypes/**' build"
   },
