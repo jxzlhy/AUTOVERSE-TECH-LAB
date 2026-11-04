@@ -2,6 +2,10 @@
 
 本仓库遵循阶段化推进；每阶段在 docs/09-handoff/ 留交接报告。
 
+## [Evolution-2 六轮] 2026-11-05 — 三视觉方向 V 级对照验证
+### Added
+- **prototypes/lighting-and-materials（:5180）**：同车三方向对照（材质/布光/底色），URL ?dir= 切换，复用材质预设库
+- 三截图入库 docs/04-design-system/directions/*.png；**IDENTITY v0 回写 design-system.md §11 升为正式基线**（视觉方向验证闭环）
 ## [Evolution-2 五轮] 2026-11-05 — Engineering Lab 独立体验页
 ### Added
 - **prototypes/engineering-lab（:5179）**：PART 9.2 独立体验——零件树（AvPartsTree）/部件聚焦/爆炸拆解+装配复原/X-RAY/WIRE/SECTION/结构说明（每部件工程描述）/轮转动画；复用 three-runtime XRay/Section/WireframeHandle + design-system ENGINEERING 组件
