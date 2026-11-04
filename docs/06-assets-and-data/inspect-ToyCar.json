@@ -1,0 +1,141 @@
+{
+  "file": "ToyCar.glb",
+  "fileSizeBytes": 5422412,
+  "generator": "glTF-Transform v4.5.1",
+  "extensionsUsed": [
+    "KHR_materials_clearcoat",
+    "KHR_materials_sheen",
+    "KHR_materials_transmission",
+    "KHR_texture_transform"
+  ],
+  "counts": {
+    "scenes": 1,
+    "nodes": 11,
+    "meshes": 3,
+    "materials": 3,
+    "textures": 8,
+    "animations": 0,
+    "triangles": 108936
+  },
+  "bounds": {
+    "min": [
+      -349.9509,
+      -369.8115,
+      -126.1662
+    ],
+    "max": [
+      384.4783,
+      369.8115,
+      162.0628
+    ]
+  },
+  "materialsList": [
+    "ToyCar",
+    "Fabric",
+    "Glass"
+  ],
+  "animationsList": [],
+  "nodes": [
+    {
+      "name": "ToyCar",
+      "hasMesh": true,
+      "primitives": 1,
+      "triangles": 88837,
+      "materials": [
+        "ToyCar"
+      ],
+      "partCandidate": {
+        "candidate": "body",
+        "confidence": 0.6
+      }
+    },
+    {
+      "name": "Fabric",
+      "hasMesh": true,
+      "primitives": 1,
+      "triangles": 17605,
+      "materials": [
+        "Fabric"
+      ],
+      "partCandidate": null
+    },
+    {
+      "name": "Glass",
+      "hasMesh": true,
+      "primitives": 1,
+      "triangles": 2494,
+      "materials": [
+        "Glass"
+      ],
+      "partCandidate": {
+        "candidate": "glass",
+        "confidence": 0.7
+      }
+    },
+    {
+      "name": "Camera001",
+      "hasMesh": false,
+      "primitives": 0,
+      "triangles": 0,
+      "materials": [],
+      "partCandidate": null
+    },
+    {
+      "name": "Camera002",
+      "hasMesh": false,
+      "primitives": 0,
+      "triangles": 0,
+      "materials": [],
+      "partCandidate": null
+    },
+    {
+      "name": "Camera003",
+      "hasMesh": false,
+      "primitives": 0,
+      "triangles": 0,
+      "materials": [],
+      "partCandidate": null
+    },
+    {
+      "name": "Camera004",
+      "hasMesh": false,
+      "primitives": 0,
+      "triangles": 0,
+      "materials": [],
+      "partCandidate": null
+    },
+    {
+      "name": "Camera005",
+      "hasMesh": false,
+      "primitives": 0,
+      "triangles": 0,
+      "materials": [],
+      "partCandidate": null
+    },
+    {
+      "name": "Camera006",
+      "hasMesh": false,
+      "primitives": 0,
+      "triangles": 0,
+      "materials": [],
+      "partCandidate": null
+    },
+    {
+      "name": "Camera007",
+      "hasMesh": false,
+      "primitives": 0,
+      "triangles": 0,
+      "materials": [],
+      "partCandidate": null
+    },
+    {
+      "name": "Camera008",
+      "hasMesh": false,
+      "primitives": 0,
+      "triangles": 0,
+      "materials": [],
+      "partCandidate": null
+    }
+  ],
+  "qualityNote": "modelType=SIMULATED（Khronos 工程示意模型）；mesh 数量多不代表完整拆解（§8.2），部件候选需人工确认。"
+}
