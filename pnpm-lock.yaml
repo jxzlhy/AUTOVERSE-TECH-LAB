@@ -284,6 +284,28 @@ importers:
         specifier: ^3.1.0
         version: 3.3.14(typescript@7.0.2)
 
+  prototypes/lighting-and-materials:
+    dependencies:
+      '@atl/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
+      '@atl/three-runtime':
+        specifier: workspace:*
+        version: link:../../packages/three-runtime
+      three:
+        specifier: ^0.187.0
+        version: 0.187.0
+    devDependencies:
+      '@types/three':
+        specifier: ^0.187.0
+        version: 0.187.0
+      typescript:
+        specifier: ^7.0.2
+        version: 7.0.2
+      vite:
+        specifier: ^8.3.5
+        version: 8.3.5(@types/node@26.6.6)
+
   prototypes/performance-benchmark:
     dependencies:
       '@atl/shared':

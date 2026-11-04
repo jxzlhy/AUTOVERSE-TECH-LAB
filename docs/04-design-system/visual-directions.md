@@ -1,6 +1,6 @@
 # 三视觉方向研究与 AUTOVERSE VISUAL IDENTITY v0（PART 5.5）
 
-> 状态：设计规则提案 v0（R 级研究 + 现有 Token 映射；视觉定稿需设计原型验证后回写 design-system.md）
+> 状态：**V 级对照验证完成（2026-11-05）**——lighting-and-materials 原型三方向截图见 directions/；IDENTITY v0 已回写 design-system.md §11
 > 日期：2026-11-05 ｜ 关联：design-system.md（Tokens 基线）
 
 ---
@@ -63,3 +63,16 @@
 | LUXURY 参照 | 高端品牌发布会/展厅惯例（O 级经验，待设计原型对照验证） |
 | SPATIAL 参照 | 本仓库已验证组件（AvHoloPanel/AvSceneSelector，V 级） |
 | MUSEUM 参照 | 档案/杂志排版惯例（O 级经验） |
+
+
+## 4. V 级对照验证（2026-11-05，lighting-and-materials 原型 :5180）
+
+同一程序化车辆在三种方向配置下的实测截图（WebGLRenderer + ACES + IBL + 材质预设库）：
+
+| 方向 | 截图 | 配置要点 |
+| --- | --- | --- |
+| LUXURY | [directions/luxury.png](directions/luxury.png) | 暖黑底 #0C0E12 / 金属漆 / 暖主光 / 无 rim |
+| SPATIAL | [directions/spatial.png](directions/spatial.png) | bg-void / 清漆珍珠 / NEXUS 青 rim 2.2 / 冷调地面 |
+| MUSEUM | [directions/museum.png](directions/museum.png) | 暖灰底 #151312 / 哑光钢象牙白 / 高补光 / 无 rim |
+
+**结论**：三方向在同一车模上呈现**可辨识的视觉差异**（材质/光/底色三轴独立生效），IDENTITY v0 的"场景决定语法"融合方案成立 → 已回写 design-system.md §11 升为正式基线。

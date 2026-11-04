@@ -201,3 +201,15 @@ ENGINEERING UI：`StatsPanel / LogConsole / AssetInspector / PerfChart`
 | 日期 | 版本 | 变更 |
 | --- | --- | --- |
 | 2026-11-04 | v1.0 | 初版：哲学、三线、Tokens、Glass/HUD/Motion/响应式/组件/无障碍基线 |
+
+---
+
+## 11. 视觉方向基线（V 级验证 2026-11-05）
+
+三方向（AUTOMOTIVE LUXURY / FUTURISTIC SPATIAL / EDITORIAL MUSEUM）设计规则与 AUTOVERSE VISUAL IDENTITY v0 融合配方见 **[visual-directions.md](visual-directions.md)**（V 级对照截图同目录 directions/）。
+
+**生效基线（场景决定语法）**：摄影棚=LUXURY ｜ 能量空间=SPATIAL ｜ 知识页=MUSEUM；三线共享本文件 §2 Tokens 与 §5 编舞；**CORE UI 禁用 backdrop-blur**（玻璃面板为 SPATIAL 专用）。
+
+| 日期 | 版本 | 变更 |
+| --- | --- | --- |
+| 2026-11-05 | §11 新增 | 三方向 V 级验证回写（lighting-and-materials 原型） |
