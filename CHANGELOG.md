@@ -43,6 +43,11 @@
 ### Fixed
 - **favicon 404**（全站 17 个 index.html 内联 SVG icon——测试驱动出的真实缺陷，消除而非掩盖）
 - strict-mode 定位歧义（REAL 色板标签 vs 徽标 → exact match）
+## [Evolution-2 十三轮] 2026-11-05 — DeLorean 知识关系链（PART 2.5 数据层首个 UI 落地）
+### Added
+- **knowledge.ts**：8 节点/7 边知识图谱数据层（Time Machine→DMC-12→鸥翼门→不锈钢车身→影视文化），每节点带 layer(REALITY/FICTION)+certainty(OFFICIAL…UNVERIFIED)+source 三标注
+- **关系链 UI**（delorean-showcase）：链根跳转（点击节点探索）+ 双向关系箭头 + REAL/FICTION 徽标 + 来源可信度展示——浏览器实测 Time Machine→DMC-12 跳转与 4 关联渲染
+- 域模型即 domain-engine 前身：静态数据验证 PART 10「先数据模型后后端」原则
 ## [Evolution-2 七轮] 2026-11-05 — Blender V 级落地 + MUSEUM 主题
 ### Added
 - **Blender 4.x 本机安装（Homebrew）→ tools/blender/inspect_asset.py V 级验证**：无头 ToyCar.glb 检查 4 mesh/108,936 tris（与 gltf-transform 双检一致）/part_id 告警；报告 blender-inspect-ToyCar.json

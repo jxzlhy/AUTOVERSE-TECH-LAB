@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { AvBadge, AvButton, AvCard, AvTabs } from "@atl/design-system";
+import { NODES, relatedFrom, type KnowledgeNode } from "./knowledge";
 
 /** PART 9.3 — DeLorean 专题骨架。
  * 红线（PART 8.4/9.3）：无真实模型不得伪装；真实 DMC-12 与影视改装显式区分（数据层 FICTION/REAL）。
@@ -9,6 +10,8 @@ import { AvBadge, AvButton, AvCard, AvTabs } from "@atl/design-system";
 type Layer = "real" | "fiction";
 
 const layer = ref<Layer>("real");
+const chainRoot = ref<KnowledgeNode>(NODES.find((n) => n.id === "time-machine")!);
+const chain = computed(() => relatedFrom(chainRoot.value.id));
 
 interface Exhibit {
   id: string;
@@ -93,6 +96,23 @@ const exhibits: Exhibit[] = [
       </template>
     </AvTabs>
 
+    <AvCard title="知识关系链（探索入口示例）" tag="KNOWLEDGE">
+      <div class="chain-root">
+        <AvBadge :kind="chainRoot.layer === 'FICTION' ? 'FICTION' : 'REAL'" />
+        <strong>{{ chainRoot.label }}</strong>
+        <span class="chain-cert">{{ chainRoot.certainty }} · {{ chainRoot.source }}</span>
+      </div>
+      <p class="chain-blurb">{{ chainRoot.blurb }}</p>
+      <ul class="chain-list">
+        <li v-for="link in chain" :key="link.node.id">
+          <span class="chain-rel" :class="link.direction">{{ link.direction === "out" ? "→" : "←" }} {{ link.rel }}</span>
+          <button class="chain-node" @click="chainRoot = link.node">{{ link.node.label }}</button>
+          <AvBadge :kind="link.node.layer === 'FICTION' ? 'FICTION' : link.node.layer === 'FUTURE' ? 'CONCEPT' : 'REAL'" />
+        </li>
+      </ul>
+      <p class="chain-hint">点击节点跳转探索（总纲 §2.5：从一辆车到整个汽车文明网络）。每条断言带来源与可信度。</p>
+    </AvCard>
+
     <AvCard title="技术接入点（本骨架 → 完整体）" tag="PLAN">
       <ul class="points">
         <li>3D 视口：复用 packages/three-runtime（SceneManager + LightingManager MUSEUM 预设）</li>
@@ -118,4 +138,19 @@ const exhibits: Exhibit[] = [
 .points { margin: 0; padding-left: 18px; }
 .points li { margin: 4px 0; }
 .meta { font-size: 12px; color: var(--av-text-muted, #64748b); }
+.chain-root { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.chain-root strong { font-size: 15px; }
+.chain-cert { font-family: var(--av-font-mono); font-size: 10px; color: var(--av-text-muted, #64748b); }
+.chain-blurb { margin: 0 0 12px; font-size: 12px; color: var(--av-text-secondary, #94a3b8); }
+.chain-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.chain-list li { display: flex; align-items: center; gap: 10px; }
+.chain-rel { font-family: var(--av-font-mono); font-size: 10px; color: var(--av-text-muted, #64748b); min-width: 84px; }
+.chain-rel.out { color: var(--av-nexus-500, #22d3ee); }
+.chain-node {
+  appearance: none; border: 1px solid rgba(148, 163, 184, 0.2); background: rgba(148, 163, 184, 0.06);
+  color: var(--av-text-primary, #f1f5f9); padding: 5px 12px; border-radius: 999px;
+  font-size: 12px; cursor: pointer;
+}
+.chain-node:hover { border-color: var(--av-nexus-500, #22d3ee); }
+.chain-hint { margin: 12px 0 0; font-size: 11px; color: var(--av-text-muted, #64748b); }
 </style>
