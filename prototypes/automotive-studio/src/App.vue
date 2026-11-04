@@ -18,6 +18,11 @@ import {
 import { SectionController, XRayController, framingForBox } from "@atl/three-runtime";
 import { TimelineManager, MotionTokens } from "@atl/motion-system";
 import {
+  MATERIAL_PRESET_INFO,
+  createAutomaterial,
+  type AutomotiveMaterialPreset,
+} from "@atl/three-runtime";
+import {
   AssetManager,
   CameraController,
   EffectManager,
@@ -57,6 +62,9 @@ const wireframeOn = ref(false);
 const sectionOn = ref(false);
 const sectionT = ref(0);
 const selectedPartId = ref<string | null>(null);
+const materialPreset = ref<"paint" | AutomotiveMaterialPreset>("paint");
+const materialPresets = Object.values(MATERIAL_PRESET_INFO);
+let presetMaterial: THREE.Material | null = null;
 let xray: XRayController | null = null;
 let section: SectionController | null = null;
 let motion: TimelineManager;
@@ -157,7 +165,29 @@ function chooseLight(id: LightPresetId): void {
 
 function choosePaint(id: string): void {
   paintId.value = id;
-  studioRefs.setPaint(PAINT_PRESETS.find((p) => p.id === id)?.color ?? "#22D3EE");
+  const hex = PAINT_PRESETS.find((p) => p.id === id)?.color ?? "#22D3EE";
+  studioRefs.setPaint(hex);
+  // 颜色同步到当前材质预设（可着色类生效；碳纤/玻璃/发光等忽略）
+  const m = presetMaterial;
+  if (m && "color" in m) (m as THREE.MeshStandardMaterial).color?.set?.(hex);
+}
+
+// PHASE 2E 产品级验证：材质预设 → 车身材质实时切换（旧预设材质由应用侧独占并负责 dispose）
+function chooseMaterial(preset: "paint" | AutomotiveMaterialPreset): void {
+  if (!studioRefs) return;
+  const body = studioRefs.car.parts.get("body");
+  if (!body) return;
+  presetMaterial?.dispose(); // 上一个预设材质为 body 独占，释放安全（ResourceLedger 语义的应用侧落地）
+  presetMaterial = null;
+  materialPreset.value = preset;
+  if (preset === "paint") {
+    body.mesh.material = studioRefs.car.paint; // 回到原生车漆
+    studioRefs.car.paint.color.set(PAINT_PRESETS.find((p) => p.id === paintId.value)?.color ?? "#22D3EE");
+    return;
+  }
+  const hex = Number(PAINT_PRESETS.find((p) => p.id === paintId.value)?.color.replace("#", "0x"));
+  presetMaterial = createAutomaterial(preset, hex);
+  body.mesh.material = presetMaterial;
 }
 
 const partNodes = ref<PartNode[]>([]);
@@ -437,6 +467,7 @@ onBeforeUnmount(() => {
   gsap.killTweensOf(explodeProxy); // PHASE 2A §2.6：动画实例不跨生命周期累积
   xray?.dispose();
   section?.detach();
+  presetMaterial?.dispose();
   motion?.dispose();
   wireframeSaved.clear();
   renderer?.setAnimationLoop(null);
@@ -516,6 +547,27 @@ onBeforeUnmount(() => {
           @click="choosePaint(p.id)"
         >
           {{ p.label }}
+        </button>
+      </div>
+      <div class="control-row">
+        <span class="control-label">MAT</span>
+        <button
+          class="chip"
+          :class="{ active: materialPreset === 'paint' }"
+          @click="chooseMaterial('paint')"
+        >
+          车漆
+        </button>
+        <button
+          v-for="mp in materialPresets"
+          :key="mp.id"
+          class="chip"
+          :class="{ active: materialPreset === mp.id }"
+          :aria-label="`材质预设 ${mp.label}`"
+          :title="mp.note"
+          @click="chooseMaterial(mp.id)"
+        >
+          {{ mp.label }}
         </button>
       </div>
       <div class="control-row">
