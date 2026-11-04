@@ -17,7 +17,7 @@
 | zustand | ^5.0.16 | MIT | 跨框架桥接备选 | vanilla 模式结论 | 未引入 | 📋 已评估未引入 |
 | gsap | ^3.15.1 | Standard 'no charge' license（免费商用，禁捆绑竞品 no-code 工具） | 动画主干 | ADR-004 | gsap-motion 原型引入 | 📋 已评估未引入 |
 | camera-controls | ^3.1.2 | MIT | 镜头控制 | 动画研究结论 | gsap-motion 原型引入 | 📋 已评估未引入 |
-| postprocessing | ^6.39.6 | MIT | 后期处理（对比评估用） | 视觉研究 | three-rendering 原型引入 | 📋 已评估未引入 |
+| postprocessing | ^6.39.6 | **Zlib**（D 代理官方核实，非 MIT） | 后期处理（对比评估用） | 视觉研究 | ⚠️ peer 依赖 three <0.188，three 升级需同步评估；three-rendering 原型引入 | 📋 已评估未引入 |
 | vite | ^8.3.5 | MIT | 构建 | Rolldown 内核实测 <1s | F6：.tsx 命名规则 | ✅ 在用 |
 | @vitejs/plugin-vue | ^6.0.10 | MIT | Vue 插件 | — | — | ✅ 在用 |
 | @vitejs/plugin-react | ^6.2.1 | MIT | React 插件 | — | — | ✅ 在用 |
