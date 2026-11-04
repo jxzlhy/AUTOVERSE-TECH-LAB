@@ -9,7 +9,7 @@
 
 | 项 | 值 |
 | --- | --- |
-| 当前阶段 | **EVOLUTION PHASE 2 四轮完成**（+ CORE UI v0.3 六件 + Blender 研究 + DeLorean 骨架 :5178） |
+| 当前阶段 | **EVOLUTION PHASE 2 五轮完成**（+ 三视觉方向研究/IDENTITY v0 + Scroll Narrative + CORE UI v0.3 六件 + Blender R 级研究 + DeLorean 骨架 :5178） |
 | 新增包 | packages/motion-system（TimelineManager：单一所有权/可取消/自动清理/Reduced Motion；6 单测） |
 | 新增原型 | prototypes/shader-lab（:5177，全十 Shader 可选 Demo + 参数滑杆） |
 | 五 Motion Demo | 登场（新）/电影级聚焦（新，Box3 取景+cinematic）/拆解/复原/场景传送（全部改走 TimelineManager） |

@@ -2,6 +2,13 @@
 
 本仓库遵循阶段化推进；每阶段在 docs/09-handoff/ 留交接报告。
 
+## [Evolution-2 四轮] 2026-11-05 — 三视觉方向 + Scroll Narrative
+### Added
+- **三视觉方向研究 + AUTOVERSE VISUAL IDENTITY v0**（docs/04-design-system/visual-directions.md）：AUTOMOTIVE LUXURY / FUTURISTIC SPATIAL / EDITORIAL MUSEUM 设计规则 + 融合配方（场景决定语法：摄影棚=LUXURY、能量空间=SPATIAL、知识页=MUSEUM）+ Token 映射与"CORE UI 禁用 backdrop-blur"边界规则
+- **Scroll Narrative**（Playground MOTION 卡片）：gsap ScrollTrigger + scrub 四步叙事（1886→未来），onMounted 注册/onBeforeUnmount revert 可清理；浏览器实测透明度梯度 [1, 0.994, 0.877, 0.609]
+### Fixed
+- F13′ 再例证：批量补丁对多行化 import 静默失配（Scroll Narrative 数据丢失）——改用 Edit 精确匹配修复；playground 补 gsap 依赖
+
 ## [Evolution-2 三轮] 2026-11-05 — CORE UI 补齐 + Blender 研究 + DeLorean 骨架
 
 ### Added
