@@ -57,6 +57,10 @@
 ### Verified
 - 浏览器实测：DomainGraph 迁移后关系链正常（Time Machine 链根 3 邻居/徽标/来源三标注）
 - 全门禁：lint 0 / typecheck 0（覆盖面扩大）/ vitest 31+2 / 九应用 build 全绿
+## [Evolution-2 十八轮] 2026-11-05 — 枢纽视图接入（hubs API→UI）
+### Added
+- DeLorean 关系链顶部**枢纽 HUBS 行**：DomainGraph.hubs(3) 度数排序 chips（影视汽车文化 5 / DMC-12 4 / Time Machine 3），点击跳转链根、current 态高亮、title 显示关联数
+- 浏览器实测：枢纽排序正确 + chip 跳转生效
 ## [Evolution-2 七轮] 2026-11-05 — Blender V 级落地 + MUSEUM 主题
 ### Added
 - **Blender 4.x 本机安装（Homebrew）→ tools/blender/inspect_asset.py V 级验证**：无头 ToyCar.glb 检查 4 mesh/108,936 tris（与 gltf-transform 双检一致）/part_id 告警；报告 blender-inspect-ToyCar.json

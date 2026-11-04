@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { AvBadge, AvButton, AvCard, AvTabs } from "@atl/design-system";
-import { NODES, relatedFrom, type KnowledgeNode } from "./knowledge";
+import { GRAPH, NODES, relatedFrom, type KnowledgeNode } from "./knowledge";
 
 /** PART 9.3 — DeLorean 专题骨架。
  * 红线（PART 8.4/9.3）：无真实模型不得伪装；真实 DMC-12 与影视改装显式区分（数据层 FICTION/REAL）。
@@ -12,6 +12,8 @@ type Layer = "real" | "fiction";
 const layer = ref<Layer>("real");
 const chainRoot = ref<KnowledgeNode>(NODES.find((n) => n.id === "time-machine")!);
 const chain = computed(() => relatedFrom(chainRoot.value.id));
+// 枢纽节点：度数排序前 3（DomainGraph.hubs）——"从一辆车到整个文明网络"的入口锚点
+const hubs = computed(() => GRAPH.hubs(3));
 
 interface Exhibit {
   id: string;
@@ -97,6 +99,19 @@ const exhibits: Exhibit[] = [
     </AvTabs>
 
     <AvCard title="知识关系链（探索入口示例）" tag="KNOWLEDGE">
+      <div class="hub-row">
+        <span class="hub-label">枢纽 HUBS</span>
+        <button
+          v-for="h in hubs"
+          :key="h.entity.id"
+          class="hub-chip"
+          :class="{ current: h.entity.id === chainRoot.id }"
+          :title="`关联数 ${h.degree}`"
+          @click="chainRoot = h.entity"
+        >
+          {{ h.entity.label }} <em>{{ h.degree }}</em>
+        </button>
+      </div>
       <div class="chain-root">
         <AvBadge :kind="chainRoot.layer === 'FICTION' ? 'FICTION' : 'REAL'" />
         <strong>{{ chainRoot.label }}</strong>
@@ -138,6 +153,16 @@ const exhibits: Exhibit[] = [
 .points { margin: 0; padding-left: 18px; }
 .points li { margin: 4px 0; }
 .meta { font-size: 12px; color: var(--av-text-muted, #64748b); }
+.hub-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.hub-label { font-family: var(--av-font-mono); font-size: 10px; letter-spacing: 0.14em; color: var(--av-text-muted, #64748b); }
+.hub-chip {
+  appearance: none; padding: 5px 12px; border-radius: 999px; cursor: pointer;
+  border: 1px solid rgba(148, 163, 184, 0.2); background: rgba(148, 163, 184, 0.06);
+  color: var(--av-text-primary, #f1f5f9); font-size: 12px;
+  transition: border-color var(--av-motion-fast, 160ms) var(--av-ease-ui, cubic-bezier(0.22,1,0.36,1));
+}
+.hub-chip em { font-style: normal; font-family: var(--av-font-mono); font-size: 10px; color: var(--av-nexus-500, #22d3ee); }
+.hub-chip:hover, .hub-chip.current { border-color: var(--av-nexus-500, #22d3ee); }
 .chain-root { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
 .chain-root strong { font-size: 15px; }
 .chain-cert { font-family: var(--av-font-mono); font-size: 10px; color: var(--av-text-muted, #64748b); }
