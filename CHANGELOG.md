@@ -15,6 +15,10 @@
 - 5179 端口被游离 preview 进程占用（旧 Playground 实例）——lsof 定位终止重启
 - 实验室 .vue 同样需要 shims-vue（与 F1 同根因）
 
+## [Evolution-2 七轮] 2026-11-05 — Blender V 级落地 + MUSEUM 主题
+### Added
+- **Blender 4.x 本机安装（Homebrew）→ tools/blender/inspect_asset.py V 级验证**：无头 ToyCar.glb 检查 4 mesh/108,936 tris（与 gltf-transform 双检一致）/part_id 告警；报告 blender-inspect-ToyCar.json
+- Playground **MUSEUM 浅色主题**切换（PART 5.4 不同主题；CSS Token 覆写琥珀 accent）
 ## [Evolution-2 四轮] 2026-11-05 — 三视觉方向 + Scroll Narrative
 ### Added
 - **三视觉方向研究 + AUTOVERSE VISUAL IDENTITY v0**（docs/04-design-system/visual-directions.md）：AUTOMOTIVE LUXURY / FUTURISTIC SPATIAL / EDITORIAL MUSEUM 设计规则 + 融合配方（场景决定语法：摄影棚=LUXURY、能量空间=SPATIAL、知识页=MUSEUM）+ Token 映射与"CORE UI 禁用 backdrop-blur"边界规则

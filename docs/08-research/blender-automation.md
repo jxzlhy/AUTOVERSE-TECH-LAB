@@ -1,6 +1,6 @@
 # Blender 自动化研究（PHASE 2F §8.5）
 
-> 核实日期：2026-11-05 ｜ 状态：**R（官方文档研究）**——本机未安装 Blender，V 级执行验证待 Blender 环境就绪后进行（见"待验证"）
+> 核实日期：2026-11-05 ｜ 状态：**V（Blender 4.x 本机实测）**——Homebrew 安装成功，无头检查脚本已跑通并与 gltf-transform 双检闭环
 
 ---
 
@@ -53,7 +53,15 @@ print("ATL_REPORT " + json.dumps(report))
 
 - 输出走 stdout 前缀 `ATL_REPORT`（无头模式可靠解析），与本仓库 `tools/inspect-glb.mjs` 形成双检查。
 
-## 3. 待验证清单（需 Blender ≥4.x 环境）
+## 3. V 级验证结果（2026-11-05，Blender 本机实测）
+
+- `--background --python` 无头运行 ✅（Homebrew blender 4.x）
+- ToyCar.glb 导入+检查 ✅：4 mesh / 108,936 tris（**与 tools/inspect-glb.mjs 完全一致——双检闭环**）/ 5 材质
+- part_id 缺失告警 ✅（4 条，符合命名规范校验预期）
+- 报告实例：blender-inspect-ToyCar.json
+- Draco 导出/three 解码闭环：**待下一项**（导出参数已就绪）
+
+## 3b. 原 R 级待验证清单（部分已完成）
 
 1. `--background` 无头运行与 ATL_REPORT 解析；
 2. glTF 导出 Draco 开关与 three 端 DRACOLoader 解码闭环；
@@ -69,4 +77,4 @@ print("ATL_REPORT " + json.dumps(report))
 | bpy API / 无头模式 | docs.blender.org/api/current | 2026-11-04 |
 | glTF 导出器选项 | docs.blender.org（io_scene_gltf） | 2026-11-04 |
 | GPL 与导出资产边界 | blender.org/about/license | 2026-11-04 |
-| 上述脚本行为 | **未能核实**（无本机 Blender） | — |
+| 脚本行为（无头/GLB 导入/报告） | **已核实**（tools/blender/inspect_asset.py 实测） | 2026-11-05 |

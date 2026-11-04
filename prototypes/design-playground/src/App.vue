@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { colors } from "@atl/shared";
@@ -50,6 +50,11 @@ const drawerOpen = ref(false);
 const searchQ = ref("");
 const selBrand = ref("delorean");
 const navActive = ref("home");
+const theme = ref<"space" | "museum">("space");
+const themeSwitch = computed({
+  get: () => theme.value === "museum",
+  set: (v: boolean) => (theme.value = v ? "museum" : "space"),
+});
 const name = ref("");
 const badEmail = ref("not-an-email");
 const toastMsg = ref<string | null>(null);
@@ -77,7 +82,10 @@ const swatches = [
 </script>
 
 <template>
-  <main class="page">
+  <main class="page" :class="{ museum: theme === 'museum' }">
+    <div class="theme-switch" style="pointer-events: auto; position: absolute; top: 14px; right: 16px; display: flex; gap: 8px">
+      <AvToggle v-model="themeSwitch" label="MUSEUM 浅色主题" accent="#F59E0B" />
+    </div>
     <header class="page-head">
       <span class="kicker">AUTOVERSE DESIGN SYSTEM</span>
       <h1>CORE UI Playground <em>v0</em></h1>
@@ -333,4 +341,17 @@ const swatches = [
 .narr-year { font-family: var(--av-font-mono); font-size: 20px; color: var(--av-nexus-500); min-width: 64px; }
 .narr-title { margin: 0 0 4px; font-size: 14px; color: var(--av-text-primary); }
 .narr-text { margin: 0; font-size: 12px; color: var(--av-text-secondary); line-height: 1.7; }
+.page.museum {
+  --av-bg-void: #f3efe7;
+  --av-bg-elevated: #ffffff;
+  --av-glass-bg: rgba(255, 255, 255, 0.9);
+  --av-text-primary: #1c1a17;
+  --av-text-secondary: #5c564d;
+  --av-text-muted: #8a8378;
+  --av-border-faint: rgba(28, 26, 23, 0.12);
+  --av-nexus-500: #b4762a;
+  background: var(--av-bg-void);
+}
+.page.museum .kicker, .page.museum .sub, .page.museum .note { color: var(--av-text-secondary); }
+.theme-switch { z-index: 5; }
 </style>
