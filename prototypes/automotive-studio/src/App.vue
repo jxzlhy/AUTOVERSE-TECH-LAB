@@ -112,10 +112,24 @@ function toggleBloom(): void {
   effects.setBloom(bloomOn.value);
 }
 
+// PHASE 2A §2.6：全局监听必须可反注册（命名处理器 + onBeforeUnmount 清理）
+function onUnhandledRejection(e: PromiseRejectionEvent): void {
+  fatal.value = String(e.reason?.message ?? e.reason);
+}
+
+function onContextLost(e: Event): void {
+  e.preventDefault(); // 允许 restored 后恢复，而不是永久黑屏
+  fatal.value = "WebGL 上下文丢失（context lost），等待恢复…";
+}
+
+function onContextRestored(): void {
+  fatal.value = null; // 三 r187 会在 restored 后重建渲染目标，页面状态保留
+}
+
 onMounted(async () => {
-  window.addEventListener("unhandledrejection", (e) => {
-    fatal.value = String((e as PromiseRejectionEvent).reason?.message ?? e.reason);
-  });
+  window.addEventListener("unhandledrejection", onUnhandledRejection);
+  canvasRef.value?.addEventListener("webglcontextlost", onContextLost);
+  canvasRef.value?.addEventListener("webglcontextrestored", onContextRestored);
   try {
     await initApp();
   } catch (err) {
@@ -212,6 +226,10 @@ async function initApp() {
 }
 
 onBeforeUnmount(() => {
+  window.removeEventListener("unhandledrejection", onUnhandledRejection);
+  canvasRef.value?.removeEventListener("webglcontextlost", onContextLost);
+  canvasRef.value?.removeEventListener("webglcontextrestored", onContextRestored);
+  gsap.killTweensOf(explodeProxy); // PHASE 2A §2.6：动画实例不跨生命周期累积
   renderer?.setAnimationLoop(null);
   resizeObs?.disconnect();
   interaction?.dispose();

@@ -1,7 +1,7 @@
 import type * as THREE from "three";
 
-/** 场景运行状态机（SceneManager） */
-export type SceneState = "idle" | "activating" | "active" | "deactivating";
+/** 场景运行状态机（SceneManager，PHASE 2A 两阶段激活） */
+export type SceneState = "idle" | "preparing" | "switching" | "active";
 
 /** 场景生命周期钩子上下文 */
 export interface SceneContext {

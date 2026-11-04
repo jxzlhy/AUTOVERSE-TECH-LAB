@@ -49,7 +49,7 @@ export class AssetRegistry<T> {
   }
 }
 
-/** 从已解析的 glTF 场景统计真实资源数（非估算） */
+/** 从已解析的 glTF 场景统计真实资源数（逐项解析确认，非估算） */
 export function computeGlbStats(gltf: GLTF): GlbStats {
   const textures = new Set<unknown>();
   const materials = new Set<unknown>();
@@ -60,8 +60,11 @@ export function computeGlbStats(gltf: GLTF): GlbStats {
     const mesh = obj as THREE.Mesh;
     if (!mesh.isMesh) return;
     meshes++;
+    // 三角面数：索引几何必须按 index.count（PHASE 2A §2.3 修复：
+    // position.count/3 对索引几何是错误值——ToyCar 实测偏差 4 倍以上）
     const pos = mesh.geometry.getAttribute("position");
-    triangles += pos ? Math.floor(pos.count / 3) : 0;
+    const index = mesh.geometry.getIndex();
+    triangles += Math.floor((index ? index.count : pos ? pos.count : 0) / 3);
     const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
     for (const mat of mats) {
       if (!mat) continue;
@@ -81,25 +84,64 @@ export function computeGlbStats(gltf: GLTF): GlbStats {
   };
 }
 
+export interface AssetManagerOptions {
+  /** Draco 解码器目录（public 下的静态路径）；配置后加载前会等待解码器就绪 */
+  dracoDecoderPath?: string;
+  /** KTX2 纹理支持：需要 renderer 做 detectSupport（PHASE 2A §2.2） */
+  ktx2?: { renderer: THREE.WebGLRenderer; transcoderPath: string };
+  /** Meshopt 压缩支持（three 内置 meshopt_decoder 模块） */
+  meshopt?: boolean;
+}
+
 export class AssetManager {
   readonly registry = new AssetRegistry<LoadedGlb>();
   private loader: GLTFLoader;
+  private decoderReady: Promise<void>;
 
-  constructor(opts: { dracoDecoderPath?: string } = {}) {
+  constructor(opts: AssetManagerOptions = {}) {
     this.loader = new GLTFLoader();
+    // 解码器初始化统一串行化：loadGLB 必须等待本 Promise（PHASE 2A §2.2，
+    // 修复"模型在解码器未就绪时开始加载"的竞态——旧实现为漂浮 async import）
+    const steps: Promise<void>[] = [];
     if (opts.dracoDecoderPath) {
-      // Draco 解码器异步挂载（解码器文件较大，不在构造期阻塞）
-      void import("three/examples/jsm/loaders/DRACOLoader.js").then(({ DRACOLoader }) => {
-        const d = new DRACOLoader();
-        d.setDecoderPath(opts.dracoDecoderPath!);
-        this.loader.setDRACOLoader(d);
-      });
+      steps.push(
+        import("three/examples/jsm/loaders/DRACOLoader.js").then(({ DRACOLoader }) => {
+          const d = new DRACOLoader();
+          d.setDecoderPath(opts.dracoDecoderPath!);
+          this.loader.setDRACOLoader(d);
+        }),
+      );
     }
+    if (opts.ktx2) {
+      const { renderer, transcoderPath } = opts.ktx2;
+      steps.push(
+        import("three/examples/jsm/loaders/KTX2Loader.js").then(({ KTX2Loader }) => {
+          const k = new KTX2Loader();
+          k.setTranscoderPath(transcoderPath);
+          k.detectSupport(renderer); // 同步方法：基于 renderer 能力判定
+          this.loader.setKTX2Loader(k);
+        }),
+      );
+    }
+    if (opts.meshopt) {
+      steps.push(
+        import("three/examples/jsm/libs/meshopt_decoder.module.js").then(({ MeshoptDecoder }) => {
+          this.loader.setMeshoptDecoder(MeshoptDecoder);
+        }),
+      );
+    }
+    this.decoderReady = Promise.all(steps).then(() => undefined);
+    // 解码器初始化失败不阻断非压缩资产：记录并在 load 时降级
+    this.decoderReady = this.decoderReady.catch((err) => {
+      console.error("[AssetManager] decoder init failed, compressed assets will fail:", err);
+    });
   }
 
-  /** 加载 GLB（带去重缓存与统计）。onProgress 回调 0..1（浏览器可提供时）。 */
+  /** 加载 GLB（先等待解码器就绪，再走去重缓存）。onProgress 回调 0..1。 */
   loadGLB(url: string, onProgress?: (ratio: number) => void): Promise<LoadedGlb> {
-    return this.registry.load(url, () => this.loadOnce(url, onProgress));
+    return this.decoderReady.then(() =>
+      this.registry.load(url, () => this.loadOnce(url, onProgress)),
+    );
   }
 
   private loadOnce(url: string, onProgress?: (ratio: number) => void): Promise<LoadedGlb> {

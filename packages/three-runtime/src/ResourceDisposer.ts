@@ -34,6 +34,24 @@ export function disposeObject3D(root: THREE.Object3D): DisposalReport {
   const seenTex = new Set<unknown>();
 
   root.traverse((obj) => {
+    // SkinnedMesh：骨骼纹理是 GPU 资源，随蒙皮网格释放（PHASE 2A §2.4）
+    const skinned = obj as THREE.SkinnedMesh;
+    if (
+      skinned.isSkinnedMesh &&
+      skinned.skeleton?.boneTexture &&
+      !seenTex.has(skinned.skeleton.boneTexture)
+    ) {
+      seenTex.add(skinned.skeleton.boneTexture);
+      skinned.skeleton.boneTexture.dispose();
+      report.textures++;
+    }
+    // InstancedMesh：instanceMatrix/instanceColor 是独立 GPU 缓冲
+    const instanced = obj as THREE.InstancedMesh;
+    if (instanced.isInstancedMesh && !seenGeo.has(instanced)) {
+      seenGeo.add(instanced);
+      instanced.dispose();
+      report.geometries++;
+    }
     const mesh = obj as THREE.Mesh;
     if (!mesh.isMesh && !(obj as THREE.Line).isLine && !(obj as THREE.Points).isPoints) return;
 
@@ -66,3 +84,72 @@ export function disposeObject3D(root: THREE.Object3D): DisposalReport {
 }
 
 export { disposeMaterialTextures };
+
+/**
+ * ResourceLedger — 跨场景共享资源的引用计数账本（PHASE 2A §2.4）。
+ * 场景 A/B 共用同一材质/纹理时，由账本决定真正的 dispose 时机，
+ * 避免"释放一个对象误伤仍在使用的资源"。约定：谁共享，谁 acquire。
+ */
+export class ResourceLedger {
+  private refCounts = new Map<object, number>();
+  private disposed = new Set<object>();
+
+  acquire(resource: object, n = 1): void {
+    this.refCounts.set(resource, (this.refCounts.get(resource) ?? 0) + n);
+  }
+
+  /** 引用归零时执行 dispose；重复 release 超出计数为调用方 bug，抛错暴露。 */
+  release(resource: { dispose?(): void }, n = 1): void {
+    const cur = this.refCounts.get(resource);
+    if (cur === undefined || cur < n) {
+      throw new Error(`ResourceLedger: release without matching acquire (${cur} < ${n})`);
+    }
+    const next = cur - n;
+    this.refCounts.set(resource, next);
+    if (next === 0 && !this.disposed.has(resource)) {
+      this.disposed.add(resource);
+      resource.dispose?.();
+    }
+  }
+
+  count(resource: object): number {
+    return this.refCounts.get(resource) ?? 0;
+  }
+}
+
+/** RenderTarget 释放（含深度/纹理附件，见 seen 防重） */
+export function disposeRenderTarget(rt: { dispose(): void } | null | undefined): boolean {
+  if (!rt) return false;
+  rt.dispose();
+  return true;
+}
+
+/**
+ * 事件监听器追踪器：注册即记账，disposeAll 一次性反注册。
+ * 用于 App 生命周期审计（PHASE 2A §2.6：所有注册资源必须有对应清理）。
+ */
+export function createListenerTracker(): {
+  on: (
+    t: EventTarget,
+    type: string,
+    fn: EventListenerOrEventListenerObject,
+    opts?: AddEventListenerOptions,
+  ) => void;
+  disposeAll: () => void;
+  size: () => number;
+} {
+  const entries: Array<
+    [EventTarget, string, EventListenerOrEventListenerObject, AddEventListenerOptions?]
+  > = [];
+  return {
+    on(target, type, fn, opts) {
+      target.addEventListener(type, fn, opts);
+      entries.push([target, type, fn, opts]);
+    },
+    disposeAll() {
+      for (const [t, type, fn, opts] of entries) t.removeEventListener(type, fn, opts);
+      entries.length = 0;
+    },
+    size: () => entries.length,
+  };
+}

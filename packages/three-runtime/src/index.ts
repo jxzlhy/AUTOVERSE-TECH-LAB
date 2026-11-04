@@ -1,6 +1,13 @@
 export * from "./types";
 export * from "./emitter";
-export { disposeObject3D, disposeMaterialTextures, type DisposalReport } from "./ResourceDisposer";
+export {
+  disposeObject3D,
+  disposeMaterialTextures,
+  disposeRenderTarget,
+  createListenerTracker,
+  ResourceLedger,
+  type DisposalReport,
+} from "./ResourceDisposer";
 export { SceneManager } from "./SceneManager";
 export { AssetManager, AssetRegistry, computeGlbStats } from "./AssetManager";
 export { LIGHT_PRESETS, LightingManager, type LightPresetId } from "./LightingManager";
