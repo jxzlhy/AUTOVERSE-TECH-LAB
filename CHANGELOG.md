@@ -31,6 +31,11 @@
 ### ⚠️ Git
 - 本地领先远程 **5 提交**（69db52e…52c8f1e 及后续）：github.com:443 持续封锁；网络恢复 `git push` 一次同步
 
+## [Evolution-2 十一轮] 2026-11-05 — 后处理 SSAO/DOF/Vignette 实现（PART 6.4 研究转实现）
+### Added
+- **EffectManager 扩展**：setSSAO（GTAOPass，最贵/桌面 HIGH 档注记）/ setDOF（BokehPass，focus/aperture/maxblur）/ setVignette（Vignette+饱和度+暖冷合一终帧 ShaderPass，最便宜）——全部懒构建 + pass 顺序正确（AO→Bloom→DOF→Grade→Output）
+- 旗舰工程面板接入 SSAO/VIG 切换：**浏览器实测三效果组合（BLOOM+SSAO+VIG）激活渲染正常**
+- 摄影棚/能量空间 scene 切换联动保留（setScene 兼容新 pass 链）
 ## [Evolution-2 七轮] 2026-11-05 — Blender V 级落地 + MUSEUM 主题
 ### Added
 - **Blender 4.x 本机安装（Homebrew）→ tools/blender/inspect_asset.py V 级验证**：无头 ToyCar.glb 检查 4 mesh/108,936 tris（与 gltf-transform 双检一致）/part_id 告警；报告 blender-inspect-ToyCar.json

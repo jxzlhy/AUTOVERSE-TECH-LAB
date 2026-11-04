@@ -296,6 +296,16 @@ function cinematicFocus(): void {
   );
 }
 
+function toggleSSAO(v: boolean): void {
+  ssaoOn.value = v;
+  effects?.setSSAO(v); // GTAO 最贵——桌面 HIGH 档（§6.4 性能注记）
+}
+
+function toggleVignette(v: boolean): void {
+  vignetteOn.value = v;
+  effects?.setVignette(v, { vignette: 0.4, saturation: 1.08, warmth: 0.3 });
+}
+
 function toggleBloom(): void {
   bloomOn.value = !bloomOn.value;
   effects.setBloom(bloomOn.value);
@@ -607,6 +617,8 @@ onBeforeUnmount(() => {
           <AvToggle v-model="xrayOn" label="X-RAY" @update:model-value="toggleXray" />
           <AvToggle v-model="wireframeOn" label="WIRE" @update:model-value="toggleWireframe" />
           <AvToggle v-model="sectionOn" label="SECTION" @update:model-value="toggleSection" />
+          <AvToggle v-model="ssaoOn" label="SSAO" @update:model-value="toggleSSAO" />
+          <AvToggle v-model="vignetteOn" label="VIG" @update:model-value="toggleVignette" />
         </div>
         <div v-if="sectionOn" class="control-row">
           <span class="control-label">剖面</span>
