@@ -1,0 +1,284 @@
+/* Design Tokens 来自 @atl/shared（此处为 CSS 侧映射，规范见 docs/04-design-system） */
+:root {
+  --bg-void: #05070d;
+  --bg-deep: #0a0f1a;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --nexus: #22d3ee;
+  --border-faint: rgba(148, 163, 184, 0.12);
+  --glass-bg: rgba(10, 15, 26, 0.55);
+  --glass-blur: blur(16px) saturate(1.2);
+  --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  --ease-ui: cubic-bezier(0.22, 1, 0.36, 1);
+  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg-void);
+  color: var(--text-primary);
+  font-family: system-ui, -apple-system, "PingFang SC", "Noto Sans SC", sans-serif;
+  overflow: hidden;
+}
+
+.stage {
+  position: relative;
+  height: 100%;
+}
+
+.canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.transition-overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--bg-void);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.hud {
+  position: absolute;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.zone-top {
+  top: 0;
+  left: 0;
+  right: 0;
+  justify-content: space-between;
+  padding: 20px 28px;
+  pointer-events: none;
+}
+
+.zone-top > * {
+  pointer-events: auto;
+}
+
+.zone-top-left {
+  top: 84px;
+  left: 28px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  pointer-events: none;
+}
+
+.zone-bottom-left {
+  bottom: 0;
+  left: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 20px 28px;
+  pointer-events: none;
+}
+
+.zone-bottom-left > * {
+  pointer-events: auto;
+}
+
+.zone-bottom-right {
+  bottom: 0;
+  right: 0;
+  padding: 20px 28px;
+  gap: 16px;
+  pointer-events: none;
+}
+
+.kicker {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: var(--text-secondary);
+}
+
+.title {
+  margin: 2px 0 0;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.mono-note {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.scene-tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.tab,
+.chip {
+  appearance: none;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border-faint);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-highlight);
+  color: var(--text-secondary);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition:
+    color 160ms var(--ease-ui),
+    border-color 160ms var(--ease-ui),
+    box-shadow 160ms var(--ease-ui);
+}
+
+.tab:hover,
+.chip:hover {
+  color: var(--text-primary);
+}
+
+.tab.active {
+  color: var(--text-primary);
+  border-color: var(--nexus);
+  box-shadow: 0 0 24px rgba(34, 211, 238, 0.16);
+}
+
+.chip.active {
+  color: var(--text-primary);
+  border-color: var(--paint, var(--nexus));
+  box-shadow: 0 0 20px color-mix(in srgb, var(--paint, var(--nexus)) 18%, transparent);
+}
+
+.control-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.control-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--text-secondary);
+  width: 44px;
+  text-align: right;
+}
+
+.chip::before {
+  content: "";
+}
+
+.chip[style*="--paint"]::before {
+  content: "";
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  margin-right: 7px;
+  border-radius: 50%;
+  background: var(--paint);
+  vertical-align: 1px;
+}
+
+.slider {
+  width: 160px;
+  accent-color: var(--nexus);
+}
+
+.loading-note {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--nexus);
+}
+
+.plaque {
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%);
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 12px 22px;
+  border-radius: 16px;
+  border: 1px solid var(--border-faint);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-highlight);
+  pointer-events: none;
+}
+
+.plaque-kicker {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: var(--nexus);
+}
+
+.plaque strong {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.stats {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.stats em {
+  font-style: normal;
+  color: var(--text-primary);
+}
+
+.asset-note {
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border-faint);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+}
+
+.fatal-note {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  flex-direction: column;
+  gap: 8px;
+  max-width: 640px;
+  padding: 20px 26px;
+  border-radius: 16px;
+  border: 1px solid rgba(248, 113, 113, 0.4);
+  background: rgba(26, 10, 12, 0.85);
+  backdrop-filter: var(--glass-blur);
+}
+
+.fatal-note strong {
+  color: #f87171;
+  font-size: 14px;
+}
+
+.fatal-note code {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-secondary);
+  word-break: break-all;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tab,
+  .chip {
+    transition: none;
+  }
+}

@@ -48,6 +48,40 @@ importers:
         specifier: ^0.187.0
         version: 0.187.0
 
+  prototypes/automotive-studio:
+    dependencies:
+      '@atl/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
+      '@atl/three-runtime':
+        specifier: workspace:*
+        version: link:../../packages/three-runtime
+      gsap:
+        specifier: ^3.15.1
+        version: 3.15.1
+      three:
+        specifier: ^0.187.0
+        version: 0.187.0
+      vue:
+        specifier: ^3.5.44
+        version: 3.5.44(typescript@7.0.2)
+    devDependencies:
+      '@types/three':
+        specifier: ^0.187.0
+        version: 0.187.0
+      '@vitejs/plugin-vue':
+        specifier: ^6.0.10
+        version: 6.0.10(vite@8.3.5)(vue@3.5.44(typescript@7.0.2))
+      typescript:
+        specifier: ^7.0.2
+        version: 7.0.2
+      vite:
+        specifier: ^8.3.5
+        version: 8.3.5
+      vue-tsc:
+        specifier: ^3.1.0
+        version: 3.3.14(typescript@7.0.2)
+
   prototypes/framework-comparison/react-r3f:
     dependencies:
       '@react-three/drei':
@@ -935,6 +969,9 @@ packages:
 
   glsl-noise@0.0.0:
     resolution: {integrity: sha512-b/ZCF6amfAUb7dJM/MxRs7AetQEahYzJ8PtgfrmEdtw6uyGOr+ZSGtgjFm6mfsBkxJ4d2W7kg+Nlqzqvn3Bc0w==}
+
+  gsap@3.15.1:
+    resolution: {integrity: sha512-63yjWRFWj3QRP1UOuD8kcidCcy3nxb1mMRpwHr/xJRvPfm9GtWOXFAYUiL0ro1fgPq2nY53LR+98pAgy9BumBg==}
 
   hashery@1.5.1:
     resolution: {integrity: sha512-iZyKG96/JwPz1N55vj2Ie2vXbhu440zfUfJvSwEqEbeLluk7NnapfGqa7LH0mOsnDxTF85Mx8/dyR6HfqcbmbQ==}
@@ -2244,6 +2281,8 @@ snapshots:
       is-glob: 4.0.3
 
   glsl-noise@0.0.0: {}
+
+  gsap@3.15.1: {}
 
   hashery@1.5.1:
     dependencies:

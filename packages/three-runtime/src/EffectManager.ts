@@ -19,22 +19,29 @@ export const DEFAULT_BLOOM: BloomParams = { strength: 0.45, radius: 0.6, thresho
 export class EffectManager {
   readonly composer: EffectComposer;
   private bloom: UnrealBloomPass;
+  private renderPass: RenderPass;
   private bloomEnabled = false;
   private output: OutputPass;
 
   constructor(
-    private renderer: THREE.WebGLRenderer,
+    renderer: THREE.WebGLRenderer,
     scene: THREE.Scene,
     camera: THREE.Camera,
     bloom: BloomParams = DEFAULT_BLOOM,
   ) {
     const size = renderer.getSize(new THREE.Vector2());
     this.composer = new EffectComposer(renderer);
-    this.composer.addPass(new RenderPass(scene, camera));
+    this.renderPass = new RenderPass(scene, camera);
+    this.composer.addPass(this.renderPass);
     this.bloom = new UnrealBloomPass(size, bloom.strength, bloom.radius, bloom.threshold);
     this.composer.addPass(this.bloom);
     this.output = new OutputPass();
     this.composer.addPass(this.output);
+  }
+
+  /** 场景切换时更新渲染目标（SceneManager 场景组归属变化） */
+  setScene(scene: THREE.Scene): void {
+    this.renderPass.scene = scene;
   }
 
   setBloom(enabled: boolean, params?: Partial<BloomParams>): void {

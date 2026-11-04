@@ -1,3 +1,6 @@
 packages:
   - "prototypes/*/*"
+  - "prototypes/*"
   - "packages/*"
+minimumReleaseAgeExclude:
+  - gsap@3.15.1

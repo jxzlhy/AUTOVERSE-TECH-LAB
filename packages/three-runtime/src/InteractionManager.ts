@@ -5,10 +5,10 @@
 import * as THREE from "three";
 import { Emitter } from "./emitter";
 
-export interface InteractionEvents {
+export type InteractionEvents = {
   hover: { object: THREE.Object3D | null };
   select: { object: THREE.Object3D | null };
-}
+};
 
 interface HoverState {
   emissive: THREE.Color;
@@ -37,12 +37,14 @@ export class InteractionManager {
     canvas.addEventListener("click", this.onClick);
   }
 
-  setPickables(root: THREE.Object3D): void {
+  setPickables(...roots: THREE.Object3D[]): void {
     this.pickables = [];
-    root.traverse((obj) => {
-      const mesh = obj as THREE.Mesh;
-      if (mesh.isMesh && mesh.visible) this.pickables.push(mesh);
-    });
+    for (const root of roots) {
+      root.traverse((obj) => {
+        const mesh = obj as THREE.Mesh;
+        if (mesh.isMesh && mesh.visible) this.pickables.push(mesh);
+      });
+    }
   }
 
   setEnabled(enabled: boolean): void {
