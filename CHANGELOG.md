@@ -2,6 +2,26 @@
 
 本仓库遵循阶段化推进；每阶段在 docs/09-handoff/ 留交接报告。
 
+## [Evolution-2 续] 2026-11-05 — PHASE 2D/2E 深化
+
+### Added
+
+- **SPATIAL UI**：AvTeleportIndicator（三态充能环）/ AvExplorationHud（探索进度）+ 旗舰接入：顶部探索 HUD、传送充能指示、**3D 锚定部件标记**（逐帧世界坐标→屏幕投影 + 距离缩放 + 相机背后隐藏）
+- **ENGINEERING UI**：AvInspector（confirmed/estimated 双可信度标注）+ AvAnnotation（编号旗标引线标注，锚定 GLB）
+- **Shader Library 补齐全十项**：Scan/Fresnel/DigitalGrid/Outline(壳放大法)/Heatmap(高度+输入混合)/WireframeHandle 加入既有 Hologram/XRay/Dissolve/EnergyFlow
+- **汽车材质预设库**：metallic-paint（官方 car 示例配方）/clearcoat-paint/carbon-fiber（程序化织纹）/brushed-metal（条纹 roughnessMap）/chrome/glass（transmission）/rubber/leather（sheen）/plastic/emissive——每预设附依据说明
+
+### Fixed
+
+- 旗舰 SPATIAL 分区 CSS：.hud 的 left/right 拉伸残留覆盖（right:auto）
+- **F13′**：python 批量补丁锚点缩进不匹配静默跳过（updateSpatialAnchors 注入丢失）——.vue 不在 tsc 范围放大风险；已建立"补丁必校验命中"纪律
+- 索引几何修复在旗舰 HUD 生效实证：25.8K → **108.9K tris**（与 inspect-glb 一致）
+
+### Verified
+
+- 工程面板/零件树选择→相机聚焦→全息铭牌/检查器（含 ≈ 标注）/X-RAY 全息视图 浏览器截图验证
+- 门禁全绿：lint 0 / typecheck 0 / vitest 19/19 / build 全绿
+
 ## [Evolution-2] 2026-11-05 — 工程强化与视觉进化（PHASE 2 首轮）
 
 ### Fixed（Runtime 稳定性，全部有测试佐证）

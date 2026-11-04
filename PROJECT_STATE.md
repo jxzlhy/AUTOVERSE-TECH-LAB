@@ -9,7 +9,7 @@
 
 | 项 | 值 |
 | --- | --- |
-| 当前阶段 | **EVOLUTION PHASE 2 首轮完成**（Runtime 稳定性/CI/基准/2D2E 切片） |
+| 当前阶段 | **EVOLUTION PHASE 2 二轮完成**（2A/2B/2C + 2D 组件九件全接入 + 2E 全十 shader + 材质库） |
 | 承接 Commit | 01e0677 → 本轮最终 SHA 见 docs/09-handoff/EVOLUTION_PHASE_2_REPORT.md |
 | 分支 | main（已推送） |
 | 门禁状态 | lint 0 ｜ typecheck 0 ｜ vitest 19/19 ｜ 六应用 build 全绿 ｜ CI 已配置（push 触发） |
@@ -29,7 +29,7 @@
 1. **真实浏览器基准执行**：harness 已就绪（:5176?scenario=X&autostart=1），需用户日常浏览器跑 A/B/D/G/H/J 并导出 JSON（IAB/headless 读数不可信——D5）
 2. **CI E2E 首跑确认**：push 已触发 ci.yml；**本机 api.github.com 受网络策略拦截无法代查，需项目所有者在 GitHub 网页 Actions 页确认 quality+e2e 两 job 绿**（唯一待用户动作）
 3. **PHASE 2G/2H**：Engineering Lab 深化（Section Control 已接入旗舰；剩余：机械动画/结构说明面板）+ DeLorean 专题页（真实 DMC-12 vs 影视改装区分展示；模型来源待寻，CC-BY-NC 禁入）。已落地：AvPartsTree/AvToggle/AvSceneSelector/AvHoloPanel + XRay/Section 控制器（旗舰实测通过，2026-11-05）
-4. **PHASE 2D 深化**：SPATIAL UI / ENGINEERING UI 组件线 + 三视觉方向研究（AUTOMOTIVE LUXURY/FUTURISTIC SPATIAL/EDITORIAL MUSEUM）
+4. **PHASE 2D/2E 剩余**：每 Shader 独立 Demo 页（shader-lab 原型，工厂已就绪）+ 材质预设接入旗舰车漆切换 + 三视觉方向研究（AUTOMOTIVE LUXURY/FUTURISTIC SPATIAL/EDITORIAL MUSEUM）
 5. **PHASE 2E 深化**：render-target 着色器转场 + 5 个完整 Motion Demo（登场/拆解/复原/传送/聚焦）
 6. **PHASE 2F**：Blender 自动化研究 + poly.pizza/Quaternius CC0 车模铺量（质量分级 S/A/B/C 实践）
 7. **Vue 线类型门禁**：vue-tsc × TS7 仍不兼容（DL-006 side-by-side 不覆盖 vue-tsc）
