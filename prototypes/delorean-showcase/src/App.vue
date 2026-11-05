@@ -14,6 +14,13 @@ const chainRoot = ref<KnowledgeNode>(NODES.find((n) => n.id === "time-machine")!
 const chain = computed(() => relatedFrom(chainRoot.value.id));
 // 枢纽节点：度数排序前 3（DomainGraph.hubs）——"从一辆车到整个文明网络"的入口锚点
 const hubs = computed(() => GRAPH.hubs(3));
+// 二跳可达：traverse(2) 去掉链根与直接邻居后的"远端网络"（PART 2.5 文明网络承诺）
+const twoHop = computed(() => {
+  const direct = new Set(chain.value.map((c) => c.node.id));
+  return GRAPH.traverse(chainRoot.value.id, 2).filter(
+    (e) => e.id !== chainRoot.value.id && !direct.has(e.id),
+  );
+});
 
 interface Exhibit {
   id: string;
@@ -125,6 +132,17 @@ const exhibits: Exhibit[] = [
           <AvBadge :kind="link.node.layer === 'FICTION' ? 'FICTION' : link.node.layer === 'FUTURE' ? 'CONCEPT' : 'REAL'" />
         </li>
       </ul>
+      <div v-if="twoHop.length" class="twohop">
+        <span class="twohop-label">二跳可达（{{ twoHop.length }}）</span>
+        <button
+          v-for="e in twoHop"
+          :key="e.id"
+          class="chain-node twohop-node"
+          @click="chainRoot = e"
+        >
+          {{ e.label }}
+        </button>
+      </div>
       <p class="chain-hint">点击节点跳转探索（总纲 §2.5：从一辆车到整个汽车文明网络）。每条断言带来源与可信度。</p>
     </AvCard>
 
@@ -177,5 +195,9 @@ const exhibits: Exhibit[] = [
   font-size: 12px; cursor: pointer;
 }
 .chain-node:hover { border-color: var(--av-nexus-500, #22d3ee); }
+.twohop { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.twohop-label { font-family: var(--av-font-mono); font-size: 10px; letter-spacing: 0.14em; color: var(--av-text-muted, #64748b); margin-right: 4px; }
+.twohop-node { opacity: 0.75; }
+.twohop-node:hover { opacity: 1; }
 .chain-hint { margin: 12px 0 0; font-size: 11px; color: var(--av-text-muted, #64748b); }
 </style>
