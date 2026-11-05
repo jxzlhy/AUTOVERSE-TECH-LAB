@@ -65,6 +65,11 @@
 ### Added
 - DeLorean 关系链新增**二跳可达区**：GRAPH.traverse(root,2) 去链根/直接邻居后的远端网络 chips（点击跳转）
 - 浏览器实测：枢纽「影视汽车文化」→ 5 直接关联（回到未来/Time Machine/Bond/Batman/KnightRider）+ 二跳 4 节点（DMC-12/DB5/Batmobile/KITT）——"从一辆车到整个文明网络"（总纲 §2.5）在 UI 兑现
+## [Evolution-2 二十轮] 2026-11-05 — 知识图谱全局搜索（search API→UI）
+### Added
+- 知识关系链卡片顶部**全局搜索框**：GRAPH.search 子串检索（label+blurb），命中节点 chips 点击跳转链根
+- 浏览器实测：输入"蝙蝠"命中 Batman 系列+Batmobile；PART 2.5 全局搜索能力首个 UI 落地
+- DomainGraph 四 API（related/traverse/hubs/search）至此全部接线 UI
 ## [Evolution-2 七轮] 2026-11-05 — Blender V 级落地 + MUSEUM 主题
 ### Added
 - **Blender 4.x 本机安装（Homebrew）→ tools/blender/inspect_asset.py V 级验证**：无头 ToyCar.glb 检查 4 mesh/108,936 tris（与 gltf-transform 双检一致）/part_id 告警；报告 blender-inspect-ToyCar.json

@@ -14,6 +14,9 @@ const chainRoot = ref<KnowledgeNode>(NODES.find((n) => n.id === "time-machine")!
 const chain = computed(() => relatedFrom(chainRoot.value.id));
 // 枢纽节点：度数排序前 3（DomainGraph.hubs）——"从一辆车到整个文明网络"的入口锚点
 const hubs = computed(() => GRAPH.hubs(3));
+// 全局搜索（DomainGraph.search）：跨节点检索，结果点击跳转
+const searchQ = ref("");
+const searchHits = computed(() => (searchQ.value.trim() ? GRAPH.search(searchQ.value) : []));
 // 二跳可达：traverse(2) 去掉链根与直接邻居后的"远端网络"（PART 2.5 文明网络承诺）
 const twoHop = computed(() => {
   const direct = new Set(chain.value.map((c) => c.node.id));
@@ -106,6 +109,21 @@ const exhibits: Exhibit[] = [
     </AvTabs>
 
     <AvCard title="知识关系链（探索入口示例）" tag="KNOWLEDGE">
+      <div class="search-row">
+        <input
+          v-model="searchQ"
+          class="search-box"
+          type="search"
+          placeholder="全局搜索：品牌 / 部件 / 影视…"
+          aria-label="知识图谱搜索"
+        />
+        <div v-if="searchQ && searchHits.length" class="search-hits">
+          <button v-for="e in searchHits" :key="e.id" class="chain-node" @click="chainRoot = e; searchQ = ''">
+            {{ e.label }}
+          </button>
+        </div>
+        <p v-if="searchQ && !searchHits.length" class="chain-hint">无匹配节点。</p>
+      </div>
       <div class="hub-row">
         <span class="hub-label">枢纽 HUBS</span>
         <button
@@ -171,6 +189,14 @@ const exhibits: Exhibit[] = [
 .points { margin: 0; padding-left: 18px; }
 .points li { margin: 4px 0; }
 .meta { font-size: 12px; color: var(--av-text-muted, #64748b); }
+.search-row { margin-bottom: 12px; }
+.search-box {
+  width: 100%; padding: 8px 12px; border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.2); background: rgba(13, 17, 23, 0.6);
+  color: var(--av-text-primary, #f1f5f9); font-size: 12px;
+}
+.search-box:focus { outline: none; border-color: var(--av-nexus-500, #22d3ee); }
+.search-hits { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
 .hub-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
 .hub-label { font-family: var(--av-font-mono); font-size: 10px; letter-spacing: 0.14em; color: var(--av-text-muted, #64748b); }
 .hub-chip {
