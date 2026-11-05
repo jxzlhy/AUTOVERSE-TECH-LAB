@@ -160,6 +160,7 @@ onBeforeUnmount(() => {
     <header class="hud head">
       <span class="kicker">ENGINEERING UNDERGROUND ｜ PART 9.2</span>
       <h1>机械工程地下实验室</h1>
+      <span class="sim-badge" title="程序化示意模型，非真实机械拆解资产">SIMULATED / PROCEDURAL MODEL</span>
     </header>
 
     <aside class="hud left">
@@ -226,6 +227,11 @@ onBeforeUnmount(() => {
 .hud { position: absolute; z-index: 10; color: var(--av-text-primary, #f1f5f9); }
 .head { top: 18px; left: 20px; flex-direction: column; gap: 2px; pointer-events: none; }
 .head h1 { margin: 2px 0 0; font-size: 16px; font-weight: 500; }
+.sim-badge {
+  display: inline-block; margin-top: 6px; padding: 3px 10px; border-radius: 999px;
+  border: 1px solid rgba(251, 191, 36, 0.4); background: rgba(251, 191, 36, 0.1);
+  color: #fbbf24; font-family: ui-monospace, Menlo, monospace; font-size: 9px; letter-spacing: 0.12em;
+}
 .kicker { font-size: 10px; letter-spacing: 0.18em; color: var(--av-text-secondary, #94a3b8); }
 .left { left: 20px; bottom: 20px; width: 300px; }
 .panel {
