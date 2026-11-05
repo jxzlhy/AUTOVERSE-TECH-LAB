@@ -59,7 +59,8 @@ print("ATL_REPORT " + json.dumps(report))
 - ToyCar.glb 导入+检查 ✅：4 mesh / 108,936 tris（**与 tools/inspect-glb.mjs 完全一致——双检闭环**）/ 5 材质
 - part_id 缺失告警 ✅（4 条，符合命名规范校验预期）
 - 报告实例：blender-inspect-ToyCar.json
-- Draco 导出/three 解码闭环：**待下一项**（导出参数已就绪）
+- Draco 导出/three 解码闭环：✅（Blender 导出 2.2MB -59%，three DRACOLoader 解码一致，见 CREDITS ToyCar-draco）
+- KTX2 纹理路径：**BLOCKED**——本地 KTX2 编码需 KTX-Software 的 toktx 二进制（homebrew 无此 formula，源码编译成本高）；替代路径：①`npx gltf-transform optimize --texture-compress ktx2`（同样依赖 toktx）②CI Ubuntu 安装 toktx ③等上游 brew formula。Draco 已覆盖几何压缩，KTX2 仅剩纹理压缩增益
 
 ## 3b. 原 R 级待验证清单（部分已完成）
 
