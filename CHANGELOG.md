@@ -95,6 +95,10 @@
 ## [Evolution-2 二十六轮] 2026-11-05 — E2E 补人物实体与 REALITY 过滤守卫
 ### Changed
 - DeLorean 知识图谱用例扩展：搜索 Giugiaro→链根断言 + byLayer REALITY 8 实体断言——二十五轮实体铺量即时纳入 E2E 守卫（5/5 通过）
+## [PHASE 3 R3] 2026-11-06 — SUPERCAR 信息铭牌 + 零件聚焦镜头联动
+### Added（product/autoverse）
+- **SUPERCAR 车型信息铭牌**：AUTOVERSE GT-S（示意车型）+ 车身/动力/材质/来源四行规格——SIMULATED 诚实标注（来源：程序化几何，非真实车型）
+- **零件聚焦镜头联动**：零件树选中 → framingForBox Box3 取景 + 帧内 easeOutCubic lerp 推近（PART 7 Object Focus 产品级落地）；实测轮毂 FL 特写 + 检查器 64 tris
 ## [PHASE 3 R2] 2026-11-06 — LEGENDS 知识链完整植入 + ENGINEERING 零件树/检查器
 ### Added（product/autoverse）
 - **LEGENDS UNIVERSE 知识图谱完整体验**：knowledge.ts（17 节点/17 边，DomainGraph 同源）+ KnowledgeChain 组件（搜索/枢纽/邻居/二跳/byLayer 五 API 全 UI）——产品内不再是"指向原型"的占位

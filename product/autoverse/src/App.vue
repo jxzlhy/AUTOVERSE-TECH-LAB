@@ -9,6 +9,7 @@ import { AvBadge, AvInspector, AvPartsTree, type PartNode } from "@atl/design-sy
 import {
   SceneManager,
   XRayController,
+  framingForBox,
   makeWireframeHandle,
 } from "@atl/three-runtime";
 import { createAutomaterial, MATERIAL_PRESET_INFO, type AutomotiveMaterialPreset } from "@atl/three-runtime";
@@ -100,8 +101,16 @@ function selectPart(id: string): void {
     { label: "三角面", value: String(Math.floor((idx ? idx.count : pos.count) / 3)), certainty: "confirmed" },
     { label: "尺寸", value: sz ? `${sz.x.toFixed(2)}×${sz.y.toFixed(2)}×${sz.z.toFixed(2)}` : "—", certainty: "estimated" },
   ];
+  // 零件聚焦镜头联动（PART 7 Object Focus）：Box3 取景 + 帧内 lerp
+  if (camera && part.mesh) {
+    part.mesh.updateMatrixWorld(true);
+    const box = new THREE.Box3().setFromObject(part.mesh);
+    const { distance, target } = framingForBox(box, { fovDeg: camera.fov, padding: 2.4, aspect: camera.aspect });
+    camFocus = { pos: target.clone().add(new THREE.Vector3(distance * 0.55, distance * 0.35, distance * 0.55)), look: target, t: 0 };
+  }
 }
 const inspectorRows = ref<{ label: string; value: string; certainty?: "confirmed" | "estimated" | "unknown" }[]>([]);
+let camFocus: { pos: THREE.Vector3; look: THREE.Vector3; t: number } | null = null;
 const xrayOn = ref(false);
 const wireOn = ref(false);
 const spinning = ref(true);
@@ -230,6 +239,13 @@ async function init(): Promise<void> {
     if (currentSpace.value === "engineering" && spinning.value) {
       for (const w of labCar?.wheels ?? []) w.rotation.z += dt * 6;
     }
+    if (camFocus) {
+      camFocus.t = Math.min(camFocus.t + dt * 2.2, 1);
+      const e = 1 - Math.pow(1 - camFocus.t, 3); // easeOutCubic
+      camera.position.lerp(camFocus.pos, e * 0.16 + 0.02);
+      camera.lookAt(camFocus.look);
+      if (camFocus.t >= 1) camFocus = null;
+    }
     renderer.render(scene, camera);
     perf.value = { fps: perf.value.fps, draws: renderer.info.render.calls, tris: renderer.info.render.triangles };
     updateProjection(canvas.clientWidth, canvas.clientHeight);
@@ -325,6 +341,18 @@ const NODE_LABEL: Record<string, string> = {
         {{ NODE_LABEL[n.id] ?? n.id }}
       </button>
     </template>
+
+    <!-- SUPERCAR：车型信息铭牌 -->
+    <aside v-if="currentSpace === 'supercar'" class="hud supercar-plaque">
+      <span class="pl-kicker">SHOWCASE ｜ <b style="color:#fbbf24">SIMULATED</b></span>
+      <strong>AUTOVERSE GT-S（示意车型）</strong>
+      <dl class="specs">
+        <div><dt>车身</dt><dd>4.40 × 1.90 × 1.72 m</dd></div>
+        <div><dt>动力</dt><dd>纯电双电机（示意）</dd></div>
+        <div><dt>材质</dt><dd>11 预设实时切换</dd></div>
+        <div><dt>来源</dt><dd>程序化几何（非真实车型）</dd></div>
+      </dl>
+    </aside>
 
     <!-- SUPERCAR：材质预设 -->
     <div v-if="currentSpace === 'supercar'" class="hud matdock">
@@ -430,6 +458,18 @@ const NODE_LABEL: Record<string, string> = {
 .dock-btn.disabled { opacity: 0.55; cursor: not-allowed; }
 .dock-btn:focus-visible { outline: 2px solid var(--av-nexus-500, #22d3ee); outline-offset: 2px; }
 .foot { bottom: 14px; right: 20px; display: flex; gap: 14px; font-family: var(--av-font-mono); font-size: 11px; color: var(--av-text-secondary, #94a3b8); pointer-events: none; }
+.supercar-plaque {
+  top: 90px; right: 24px; width: 250px; display: flex; flex-direction: column; gap: 6px;
+  padding: 14px 16px; border-radius: 16px; border: 1px solid rgba(148,163,184,0.18);
+  background: rgba(10,15,26,0.72); backdrop-filter: blur(14px); pointer-events: none;
+}
+.supercar-plaque strong { font-size: 13px; }
+.pl-kicker { font-size: 10px; letter-spacing: 0.14em; color: var(--av-text-secondary, #94a3b8); }
+.pl-kicker b { font-family: var(--av-font-mono); font-size: 9px; }
+.specs { margin: 4px 0 0; }
+.specs div { display: flex; justify-content: space-between; padding: 2px 0; }
+.specs dt { color: var(--av-text-muted, #64748b); font-size: 11px; }
+.specs dd { margin: 0; font-family: var(--av-font-mono); font-size: 11px; color: var(--av-text-primary, #f1f5f9); }
 .matdock { bottom: 84px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; max-width: 92vw; }
 .dock-btn.small { padding: 6px 12px; font-size: 11px; }
 .dock-btn.small.active { color: var(--av-nexus-500, #22d3ee); border-color: var(--av-nexus-500, #22d3ee); }
