@@ -49,11 +49,29 @@
 
 理由：monorepo 已有 4 packages + 9 原型的共享基础；独立 `product/autoverse` App 复用成本最低；TECH LAB 定位不变。
 
-## 本轮已完成（详见后续提交）
+## PHASE 3 迭代记录（R1–R6，全部已推送）
 
-- 产品 App 骨架（路由/导航/中文 UI/Design Tokens 接入）
-- THE NEXUS 3D 主空间（SceneManager 多场景 + 空间节点交互）
-- 三大体验接入（SUPERCAR/ENGINEERING/LEGENDS）
+| 轮次 | Commit | 内容 |
+| --- | --- | --- |
+| R1 | e10739c | 产品 App + THE NEXUS 主空间（全息核心/六轨道节点/传送标签/探索进度）+ 三大体验接入 |
+| R2 | bcfd81d | LEGENDS 知识链完整植入（17 节点 DomainGraph 五 API UI）+ ENGINEERING 零件树/检查器 |
+| R3 | 9aebdd4 | SUPERCAR 信息铭牌（SIMULATED 诚实标注）+ 零件聚焦镜头联动（framingForBox+lerp） |
+| R4 | 440c852 | 传送白闪节奏 + NEXUS 分类快速入口（byLayer）+ 性能档位 LOW/HIGH（TIER HUD） |
+| R5 | c1867b3 | ENGINEERING 结构说明文案 + E2E 6/6 产品全流程守卫 + F24/F25/F26 修复 |
+| R6 | 8a36003 | jsdom 网络窗口补装（33/33 全量单测）+ KTX2 BLOCKED 留证（toktx 不可得，Draco 已闭环） |
+
+### 缺陷/发现登记（F17–F26 续）
+
+- F22'：批量补丁断言失败整段未写入——逐锚点跟踪纪律
+- F23：传送 rAF 链 IAB 节流下永不 resolve → CSS transition + setTimeout
+- F24：跨模块可变对象直引 rolldown 改名边界 → 函数导出
+- F25/F26：import 缺失三抓同族——**E2E 是唯一自动防线**
+
+## 用户侧待办（不变）
+
+1. GitHub Actions 页确认 ci.yml quality/e2e 两 job（推送已触发多次）
+2. 真机浏览器跑 :5176/?scenario=A…K&autostart=1 导出基准 JSON → 性能预算 v1
+3. DeLorean S/A 级资产寻源决策（Sketchfab 账号/采购）→ 解除专题页禁用态
 
 ## 后续路线
 
