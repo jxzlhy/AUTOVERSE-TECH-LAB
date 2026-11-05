@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { createScrollNarrative } from "@atl/motion-system";
 import { colors } from "@atl/shared";
 import {
   AvBadge,
@@ -19,33 +18,27 @@ import {
   AvTooltip,
 } from "@atl/design-system";
 
-// PART 7 Scroll Narrative（gsap ScrollTrigger + scrub）
-gsap.registerPlugin(ScrollTrigger);
+// PART 7 Scroll Narrative（正式封装版，ScrollTrigger 由 motion-system 内部注册）
 const narrativeSteps = [
   { year: "1886", title: "汽车诞生", text: "Karl Benz Patent-Motorwagen——交通文明的第一道车辙。" },
   { year: "1962", title: "性能纪元", text: "保时捷 901 面世，911 血统由此开始。" },
   { year: "1981", title: "不锈钢传奇", text: "DeLorean DMC-12 下线，随后成为时间机器。" },
   { year: "未来", title: "探索不止", text: "AUTOVERSE：一个宇宙，多个世界，无限探索。" },
 ];
-let narrativeCtx: gsap.Context | null = null;
+let narrative: ReturnType<typeof createScrollNarrative> | null = null;
 onMounted(() => {
-  // 直用 ScrollTrigger 版（浏览器已验证）；motion-system.createScrollNarrative 封装已就绪
-  //（单测通过），页面级迁移待 IAB 可验证窗口——见 PROJECT_STATE
-  narrativeCtx = gsap.context(() => {
-    gsap.utils.toArray<HTMLElement>(".narr-step").forEach((el) => {
-      gsap.fromTo(
-        el,
-        { opacity: 0.15, y: 24 },
-        {
-          opacity: 1,
-          y: 0,
-          scrollTrigger: { trigger: el, start: "top 82%", end: "top 45%", scrub: 0.6 },
-        },
-      );
-    });
-  });
+  // 第二次迁移尝试：这次带 console 取证（F19 调试）
+  try {
+    narrative = createScrollNarrative(
+      narrativeSteps.map((_, i) => ({ el: `.narr-step:nth-child(${i + 1})` })),
+      { scope: ".narr-track" },
+    );
+    (window as unknown as { __mig: string }).__mig = "ok";
+  } catch (err) {
+    (window as unknown as { __mig: string }).__mig = `ERR:${String(err)}`;
+  }
 });
-onBeforeUnmount(() => narrativeCtx?.revert()); // PART 7：可清理
+onBeforeUnmount(() => narrative?.destroy()); // PART 7：可清理
 
 const modalOpen = ref(false);
 const drawerOpen = ref(false);
@@ -232,7 +225,7 @@ const swatches = [
           </div>
         </div>
       </div>
-      <p class="note">gsap ScrollTrigger + scrub；reduced-motion 由 TimelineManager 体系统一裁决（本 Demo 直用 ScrollTrigger，正式接入走 packages/motion-system 封装）。</p>
+      <p class="note">createScrollNarrative 正式封装（packages/motion-system）：ScrollTrigger + scrub，reduced-motion 直达终态，onBeforeUnmount destroy 可清理。</p>
     </AvCard>
 
     <footer class="page-foot">

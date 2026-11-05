@@ -75,6 +75,13 @@
 - DeLorean 知识图谱**分类视图**：REALITY/FICTION/FUTURE chips 过滤（GRAPH.byLayer），实体网格带语义徽标、计数显示、点击跳转链根
 - 浏览器实测：FICTION 过滤命中 9 实体（全部徽标正确）
 - **DomainGraph 五 API（related/traverse/hubs/search/byLayer）全部接线 UI**——PART 2.5 数据层-UI 同步收尾
+## [Evolution-2 二十二轮] 2026-11-05 — F19 根因修复 + Playground 迁移完成（闭环）
+### Fixed
+- **F19 根因实锤**：迁移黑屏＝孤儿语句 `gsap.registerPlugin(ScrollTrigger)`（导入已删但此行残留）→ 模块求值 ReferenceError → Vue setup 崩溃渲染空白。两轮黑屏同根因
+- **调试方法论升级**：index.html 引导钩子拦截 console.error（Vue 错误不走 window error——此为两轮未取证的原因），一次定位
+### Changed
+- Playground Scroll Narrative **正式迁移至 createScrollNarrative**：`mig:"ok"` + 零错误 + 透明度梯度 [0.554,0.446,0.218,0.15]（scrub 驱动实测）；说明文字同步
+- PART 7 Scroll Narrative 页面级迁移闭环（此前安全回退的债务清偿）
 ## [Evolution-2 七轮] 2026-11-05 — Blender V 级落地 + MUSEUM 主题
 ### Added
 - **Blender 4.x 本机安装（Homebrew）→ tools/blender/inspect_asset.py V 级验证**：无头 ToyCar.glb 检查 4 mesh/108,936 tris（与 gltf-transform 双检一致）/part_id 告警；报告 blender-inspect-ToyCar.json

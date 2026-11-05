@@ -7,7 +7,16 @@
     <title>ATL Design Playground · CORE UI v0</title>
   </head>
   <body>
-    <div id="app"></div>
+    <script>
+    window.__bootErr = [];
+    window.addEventListener("error", function (e) { window.__bootErr.push(String(e.message) + " @" + (e.filename || "").slice(-40) + ":" + e.lineno); });
+    window.addEventListener("unhandledrejection", function (e) { window.__bootErr.push("REJ:" + String(e.reason && e.reason.message || e.reason)); });
+    var _err = console.error.bind(console);
+    console.error = function () { window.__bootErr.push("CE:" + Array.from(arguments).map(String).join(" ").slice(0, 300)); _err.apply(console, arguments); };
+    var _warn = console.warn.bind(console);
+    console.warn = function () { window.__bootErr.push("CW:" + Array.from(arguments).map(String).join(" ").slice(0, 200)); _warn.apply(console, arguments); };
+  </script>
+  <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
