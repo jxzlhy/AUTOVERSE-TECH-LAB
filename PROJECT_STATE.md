@@ -9,7 +9,7 @@
 
 | 项 | 值 |
 | --- | --- |
-| 当前阶段 | **PHASE 3 R1 完成**（P2 CLOSED @ Final Gate 报告；产品 App THE NEXUS + 三体验全部实测） |
+| 当前阶段 | **PHASE 3 R2 完成**（LEGENDS 知识链完整植入 + ENGINEERING 零件树/检查器，实测通过） |
 | ✅ 推送 | **网络已恢复，远程已同步**（aca4bf5..4475009 用户侧 push + 本轮持续推送）；CI 已触发，结果以 Actions 页为准 |
 | ⚠️ 推送状态 | **github.com:443 已被网络策略持续封锁**（SSL_ERROR_SYSCALL 持续，连 npm registry 亦被断——环境网络逐块降级）。**本地领先远程 4 个提交未推送**：69db52e（Draco 闭环）/ bacba5a / scroll-narrative 封装 + 依赖纪律提交。网络恢复后 `git push` 一次即同步；断点信息完整在本文件与 CHANGELOG |
 | 新增包 | packages/motion-system（TimelineManager：单一所有权/可取消/自动清理/Reduced Motion；6 单测） |

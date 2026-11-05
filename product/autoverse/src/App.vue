@@ -5,7 +5,7 @@
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import * as THREE from "three";
 import { colors } from "@atl/shared";
-import { AvBadge } from "@atl/design-system";
+import { AvBadge, AvInspector, AvPartsTree, type PartNode } from "@atl/design-system";
 import {
   SceneManager,
   XRayController,
@@ -13,6 +13,7 @@ import {
 } from "@atl/three-runtime";
 import { createAutomaterial, MATERIAL_PRESET_INFO, type AutomotiveMaterialPreset } from "@atl/three-runtime";
 import { buildNexus, type NexusRefs } from "./nexus";
+import KnowledgeChain from "./components/KnowledgeChain.vue";
 import { applyExplode, buildLabCar, buildShowCar, buildLegendsStars, makeGround, type LabCar, type ShowCar } from "./spaces";
 
 const canvasRef = ref<HTMLCanvasElement | null>(null);
@@ -84,6 +85,23 @@ function chooseMaterial(preset: "paint" | AutomotiveMaterialPreset): void {
 const matPresets = Object.values(MATERIAL_PRESET_INFO);
 
 const explodeT = ref(0);
+const selectedPartId = ref<string | null>(null);
+const partTree = ref<PartNode[]>([]);
+function selectPart(id: string): void {
+  selectedPartId.value = id;
+  const part = labCar?.parts.get(id);
+  if (!part) return;
+  part.mesh.geometry.computeBoundingBox();
+  const sz = part.mesh.geometry.boundingBox?.getSize(new THREE.Vector3());
+  const idx = part.mesh.geometry.getIndex();
+  const pos = part.mesh.geometry.getAttribute("position");
+  inspectorRows.value = [
+    { label: "部件 ID", value: id, certainty: "confirmed" },
+    { label: "三角面", value: String(Math.floor((idx ? idx.count : pos.count) / 3)), certainty: "confirmed" },
+    { label: "尺寸", value: sz ? `${sz.x.toFixed(2)}×${sz.y.toFixed(2)}×${sz.z.toFixed(2)}` : "—", certainty: "estimated" },
+  ];
+}
+const inspectorRows = ref<{ label: string; value: string; certainty?: "confirmed" | "estimated" | "unknown" }[]>([]);
 const xrayOn = ref(false);
 const wireOn = ref(false);
 const spinning = ref(true);
@@ -182,6 +200,11 @@ async function init(): Promise<void> {
 
   // 通过 SceneManager 激活初始场景（currentId 追踪，切换时才能正确移除）
   await sceneManager.activate("nexus");
+  partTree.value = Array.from(labCar.parts.keys()).map((id) => ({
+    id,
+    label: id.startsWith("hub-") ? `└ 轮毂 ${id.slice(4)}` : id.startsWith("wheel-") ? `车轮 ${id.slice(6)}` : id === "body" ? "车身壳体" : "座舱玻璃舱",
+    depth: id.startsWith("hub-") ? 1 : 0,
+  }));
 
   // 预置体验标记：已建成的三个空间节点高亮为"可进入"（REALITY/FICTION 已规划内容）
   canvas.addEventListener("webglcontextlost", onLost);
@@ -329,12 +352,16 @@ const NODE_LABEL: Record<string, string> = {
         <button class="dock-btn small" :class="{ active: wireOn }" @click="toggleWire(!wireOn)">WIRE</button>
         <button class="dock-btn small" :class="{ active: spinning }" @click="spinning = !spinning">轮转</button>
       </div>
+      <div style="pointer-events: auto">
+        <AvPartsTree :parts="partTree" :selected-id="selectedPartId" @select="selectPart" />
+      </div>
+      <AvInspector v-if="inspectorRows.length" title="Component Inspector" :rows="inspectorRows" />
     </div>
 
     <!-- LEGENDS：知识链（DOM 层，数据 @atl/shared DomainGraph 同源） -->
     <div v-if="currentSpace === 'legends'" class="hud legenddock">
-      <span class="sim-tag">LEGENDS UNIVERSE · 知识链</span>
-      <div class="legend-note">DeLorean Time Machine → DMC-12 → 鸥翼门 → 不锈钢车身（详见专题 :5178，此为产品内嵌入口）</div>
+      <span class="sim-tag" style="border-color: rgba(167,139,250,0.4); background: rgba(167,139,250,0.1); color: #a78bfa;">LEGENDS UNIVERSE · 知识图谱</span>
+      <KnowledgeChain />
     </div>
 
     <!-- 当前空间信息铭牌 -->
@@ -415,7 +442,7 @@ const NODE_LABEL: Record<string, string> = {
   border: 1px solid rgba(251,191,36,0.4); background: rgba(251,191,36,0.1);
   color: #fbbf24; font-family: var(--av-font-mono); font-size: 9px; letter-spacing: 0.12em;
 }
-.legenddock { bottom: 84px; left: 50%; transform: translateX(-50%); width: min(640px, 92vw); display: flex; flex-direction: column; gap: 8px; padding: 14px 18px; border-radius: 16px; border: 1px solid rgba(167,139,250,0.3); background: rgba(20,15,30,0.75); backdrop-filter: blur(14px); }
+.legenddock { bottom: 84px; left: 50%; transform: translateX(-50%); width: min(720px, 94vw); max-height: 62vh; overflow: auto; display: flex; flex-direction: column; gap: 8px; padding: 14px 18px; border-radius: 16px; border: 1px solid rgba(167,139,250,0.3); background: rgba(20,15,30,0.75); backdrop-filter: blur(14px); }
 .legend-note { font-size: 12px; color: var(--av-text-secondary, #94a3b8); }
 .fatal {
   position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 50;

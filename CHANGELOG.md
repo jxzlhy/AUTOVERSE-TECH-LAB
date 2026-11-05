@@ -95,6 +95,13 @@
 ## [Evolution-2 二十六轮] 2026-11-05 — E2E 补人物实体与 REALITY 过滤守卫
 ### Changed
 - DeLorean 知识图谱用例扩展：搜索 Giugiaro→链根断言 + byLayer REALITY 8 实体断言——二十五轮实体铺量即时纳入 E2E 守卫（5/5 通过）
+## [PHASE 3 R2] 2026-11-06 — LEGENDS 知识链完整植入 + ENGINEERING 零件树/检查器
+### Added（product/autoverse）
+- **LEGENDS UNIVERSE 知识图谱完整体验**：knowledge.ts（17 节点/17 边，DomainGraph 同源）+ KnowledgeChain 组件（搜索/枢纽/邻居/二跳/byLayer 五 API 全 UI）——产品内不再是"指向原型"的占位
+- **ENGINEERING LAB 零件树 + Component Inspector**：AvPartsTree（10 部件层级）+ 三标注检查器（confirmed/estimated）
+### Verified
+- 浏览器实测：LEGENDS 知识链全要素渲染（搜索框/枢纽 7·5·3/链根/邻居/二跳 9/分类 chips）；ENGINEERING 车轮 FL 选中→检查器（112 tris/尺寸 ≈）
+- 门禁：lint 0 / typecheck 0（+product）/ vitest 31+2 / build 10 应用全绿
 ## [PHASE 3 R1] 2026-11-06 — AUTOVERSE 正式产品第一轮
 ### Added（product/autoverse :5181，方案 A 独立 Product App）
 - **THE NEXUS 主空间**：全息核心（Hologram 入库 shader-library）+ 六空间轨道节点（可点击传送标签/3D 投影）+ 星环 + 数字网格 + 探索进度
