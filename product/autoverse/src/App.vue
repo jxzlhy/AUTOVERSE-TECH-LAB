@@ -14,6 +14,7 @@ import {
 } from "@atl/three-runtime";
 import { createAutomaterial, MATERIAL_PRESET_INFO, type AutomotiveMaterialPreset } from "@atl/three-runtime";
 import { buildNexus, type NexusRefs } from "./nexus";
+import { GRAPH } from "./knowledge";
 import KnowledgeChain from "./components/KnowledgeChain.vue";
 import { applyExplode, buildLabCar, buildShowCar, buildLegendsStars, makeGround, type LabCar, type ShowCar } from "./spaces";
 
@@ -39,6 +40,7 @@ let renderer: THREE.WebGLRenderer;
 let scene: THREE.Scene;
 let camera: THREE.PerspectiveCamera;
 let nexus: NexusRefs;
+const quickLayer = ref<"" | "REALITY" | "FICTION" | "FUTURE">("");
 let sceneManager: SceneManager;
 let showCar: ShowCar;
 let labCar: LabCar;
@@ -50,6 +52,7 @@ let clock: THREE.Clock;
 let elapsed = 0;
 let raf = 0;
 let resizeObs: ResizeObserver | null = null;
+let perfTier: "LOW" | "HIGH" = "HIGH";
 
 const SPACE_IDS = ["nexus", "supercar", "engineering", "legends", "museum", "earth", "future"] as const;
 type SpaceId = (typeof SPACE_IDS)[number];
@@ -142,7 +145,10 @@ onMounted(async () => {
 async function init(): Promise<void> {
   const canvas = canvasRef.value!;
   renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  // 性能档位（R4）：按设备内存粗判 LOW/HIGH；LOW 档压 DPR
+  const dm = (navigator as unknown as { deviceMemory?: number }).deviceMemory;
+  perfTier = dm !== undefined && dm <= 4 ? "LOW" : "HIGH";
+  renderer.setPixelRatio(Math.min(devicePixelRatio, perfTier === "LOW" ? 1.25 : 2));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
 
   scene = new THREE.Scene();
@@ -264,6 +270,19 @@ async function travel(id: SpaceId): Promise<void> {
   const prev = currentSpace.value;
   currentSpace.value = id;
   visited.value.add(id);
+  // 传送白闪节奏（R4）：遮罩 0→1→0（sin 曲线），中点执行场景激活
+  const overlay = overlayRef.value;
+  overlay.style.transition = "none";
+  let flashT = 0;
+  await new Promise<void>((resolve) => {
+    const step = () => {
+      flashT = Math.min(flashT + 0.045, 1);
+      overlay.style.opacity = String(Math.sin(flashT * Math.PI));
+      if (flashT < 1) requestAnimationFrame(step);
+      else resolve();
+    };
+    step();
+  });
   await sceneManager.activate(id, { disposeCurrent: false }).catch((err) => {
     // 两阶段失败保当前场景（PART 2A 契约）
     currentSpace.value = prev;
@@ -275,9 +294,14 @@ async function travel(id: SpaceId): Promise<void> {
   const proxy = { t: 0 };
   const tl = (window as unknown as { __travelTL?: unknown }).__travelTL;
   void tl;
+  // 回淡遮罩（与镜头动画并行）+ easeInOutCubic 镜头曲线（cinematic，R4）
+  overlay.style.transition = "opacity 420ms cubic-bezier(0.22, 1, 0.36, 1)";
+  overlay.style.opacity = "0";
   const step = () => {
-    proxy.t = Math.min(proxy.t + 0.02, 1);
-    camera.position.lerpVectors(startPos, endPos, proxy.t);
+    proxy.t = Math.min(proxy.t + 0.018, 1);
+    const e = proxy.t < 0.5 ? 4 * proxy.t ** 3 : 1 - Math.pow(-2 * proxy.t + 2, 3) / 2;
+    camera.position.lerpVectors(startPos, endPos, e);
+    camera.lookAt(0, 2.2, 0);
     if (proxy.t < 1) requestAnimationFrame(step);
   };
   step();
@@ -399,6 +423,26 @@ const NODE_LABEL: Record<string, string> = {
       <span class="hint">{{ meta.hint }}</span>
     </aside>
 
+    <!-- NEXUS：知识分类快速入口（byLayer） -->
+    <div v-if="currentSpace === 'nexus'" class="hud layer-quick">
+      <button
+        v-for="opt in ['REALITY', 'FICTION', 'FUTURE'] as const"
+        :key="opt"
+        class="dock-btn small"
+        @click="quickLayer = quickLayer === opt ? '' : opt"
+      >
+        {{ opt }}
+      </button>
+    </div>
+    <div v-if="currentSpace === 'nexus' && quickLayer" class="hud layer-panel">
+      <span class="av-kicker">{{ quickLayer }} 视图 · {{ GRAPH.byLayer(quickLayer).length }} 实体</span>
+      <div class="layer-grid-inline">
+        <button v-for="e in GRAPH.byLayer(quickLayer)" :key="e.id" class="chain-node" @click="travel(e.id === 'dmc12' ? 'supercar' : 'legends')">
+          {{ e.label }}
+        </button>
+      </div>
+    </div>
+
     <!-- 底部空间导航 -->
     <nav class="hud dock" aria-label="空间导航">
       <button
@@ -417,6 +461,7 @@ const NODE_LABEL: Record<string, string> = {
     <footer class="hud foot">
       <span>{{ perf.draws }} DRAWS</span>
       <span>{{ (perf.tris / 1000).toFixed(1) }}K TRIS</span>
+      <span>TIER: {{ perfTier }}</span>
       <span>GPU mem: NOT MEASURABLE</span>
     </footer>
   </div>
@@ -446,6 +491,15 @@ const NODE_LABEL: Record<string, string> = {
 .plaque strong { font-family: var(--av-font-mono); font-size: 13px; }
 .plaque .hint { font-size: 11px; color: var(--av-text-secondary, #94a3b8); }
 .dock { bottom: 16px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; }
+.layer-quick { top: 96px; left: 24px; right: auto; }
+.layer-panel {
+  top: 140px; left: 24px; right: auto; max-width: 460px;
+  display: flex; flex-direction: column; gap: 8px; padding: 12px 16px;
+  border-radius: 16px; border: 1px solid rgba(148, 163, 184, 0.18);
+  background: rgba(10, 15, 26, 0.82); backdrop-filter: blur(14px);
+}
+.layer-grid-inline { display: flex; flex-wrap: wrap; gap: 6px; }
+.layer-grid-inline .chain-node { font-size: 11px; }
 .dock-btn {
   appearance: none; padding: 8px 14px; border-radius: 999px; cursor: pointer;
   border: 1px solid rgba(148, 163, 184, 0.2); background: rgba(10, 15, 26, 0.72); backdrop-filter: blur(12px);

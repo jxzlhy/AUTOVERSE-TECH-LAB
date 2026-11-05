@@ -95,6 +95,15 @@
 ## [Evolution-2 二十六轮] 2026-11-05 — E2E 补人物实体与 REALITY 过滤守卫
 ### Changed
 - DeLorean 知识图谱用例扩展：搜索 Giugiaro→链根断言 + byLayer REALITY 8 实体断言——二十五轮实体铺量即时纳入 E2E 守卫（5/5 通过）
+## [PHASE 3 R4] 2026-11-06 — 传送白闪 + 分类快速入口 + 性能档位
+### Added（product/autoverse）
+- **传送白闪节奏**：遮罩 sin 曲线 0→1→0，中点执行场景激活；镜头 easeInOutCubic（cinematic）
+- **知识分类快速入口**：NEXUS 内 REALITY/FICTION/FUTURE chips（byLayer 视图 9 实体网格，点击跳转 SUPERCAR/LEGENDS）
+- **性能档位**：deviceMemory 粗判 LOW/HIGH（LOW 压 DPR 1.25）；HUD 显示 TIER
+### Fixed
+- F22':批量补丁断言失败整段未写入（write 在末尾）——教训：逐锚点跟踪 applied/MISS
+### Verified
+- 浏览器实测：FICTION 面板 9 实体网格 + TIER: HIGH + 分类 chips 渲染
 ## [PHASE 3 R3] 2026-11-06 — SUPERCAR 信息铭牌 + 零件聚焦镜头联动
 ### Added（product/autoverse）
 - **SUPERCAR 车型信息铭牌**：AUTOVERSE GT-S（示意车型）+ 车身/动力/材质/来源四行规格——SIMULATED 诚实标注（来源：程序化几何，非真实车型）
