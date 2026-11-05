@@ -16,7 +16,16 @@ import { createAutomaterial, MATERIAL_PRESET_INFO, type AutomotiveMaterialPreset
 import { buildNexus, type NexusRefs } from "./nexus";
 import { GRAPH } from "./knowledge";
 import KnowledgeChain from "./components/KnowledgeChain.vue";
-import { applyExplode, buildLabCar, buildShowCar, buildLegendsStars, makeGround, type LabCar, type ShowCar } from "./spaces";
+import {
+  applyExplode,
+  buildLabCar,
+  buildShowCar,
+  buildLegendsStars,
+  makeGround,
+  partDescription,
+  type LabCar,
+  type ShowCar,
+} from "./spaces";
 
 const canvasRef = ref<HTMLCanvasElement | null>(null);
 const overlayRef = ref<HTMLDivElement | null>(null);
@@ -104,6 +113,7 @@ function selectPart(id: string): void {
     { label: "三角面", value: String(Math.floor((idx ? idx.count : pos.count) / 3)), certainty: "confirmed" },
     { label: "尺寸", value: sz ? `${sz.x.toFixed(2)}×${sz.y.toFixed(2)}×${sz.z.toFixed(2)}` : "—", certainty: "estimated" },
   ];
+  structureDesc.value = partDescription(id);
   // 零件聚焦镜头联动（PART 7 Object Focus）：Box3 取景 + 帧内 lerp
   if (camera && part.mesh) {
     part.mesh.updateMatrixWorld(true);
@@ -113,6 +123,7 @@ function selectPart(id: string): void {
   }
 }
 const inspectorRows = ref<{ label: string; value: string; certainty?: "confirmed" | "estimated" | "unknown" }[]>([]);
+const structureDesc = ref("");
 let camFocus: { pos: THREE.Vector3; look: THREE.Vector3; t: number } | null = null;
 const xrayOn = ref(false);
 const wireOn = ref(false);
@@ -270,19 +281,12 @@ async function travel(id: SpaceId): Promise<void> {
   const prev = currentSpace.value;
   currentSpace.value = id;
   visited.value.add(id);
-  // 传送白闪节奏（R4）：遮罩 0→1→0（sin 曲线），中点执行场景激活
+  // 传送白闪（R4/F24 修复）：CSS transition + setTimeout 驱动——rAF 链在
+  // IAB 节流环境下永不 resolve（F4/F23），setTimeout 不受合成策略影响
   const overlay = overlayRef.value;
   overlay.style.transition = "none";
-  let flashT = 0;
-  await new Promise<void>((resolve) => {
-    const step = () => {
-      flashT = Math.min(flashT + 0.045, 1);
-      overlay.style.opacity = String(Math.sin(flashT * Math.PI));
-      if (flashT < 1) requestAnimationFrame(step);
-      else resolve();
-    };
-    step();
-  });
+  overlay.style.opacity = "1";
+  await new Promise((r) => setTimeout(r, 300));
   await sceneManager.activate(id, { disposeCurrent: false }).catch((err) => {
     // 两阶段失败保当前场景（PART 2A 契约）
     currentSpace.value = prev;
@@ -294,18 +298,12 @@ async function travel(id: SpaceId): Promise<void> {
   const proxy = { t: 0 };
   const tl = (window as unknown as { __travelTL?: unknown }).__travelTL;
   void tl;
-  // 回淡遮罩（与镜头动画并行）+ easeInOutCubic 镜头曲线（cinematic，R4）
+  // 白闪峰值处直接定位镜头（跳变被峰值覆盖），遮罩 CSS transition 回淡
+  camera.position.copy(endPos);
+  camera.lookAt(0, 2.2, 0);
   overlay.style.transition = "opacity 420ms cubic-bezier(0.22, 1, 0.36, 1)";
   overlay.style.opacity = "0";
-  const step = () => {
-    proxy.t = Math.min(proxy.t + 0.018, 1);
-    const e = proxy.t < 0.5 ? 4 * proxy.t ** 3 : 1 - Math.pow(-2 * proxy.t + 2, 3) / 2;
-    camera.position.lerpVectors(startPos, endPos, e);
-    camera.lookAt(0, 2.2, 0);
-    if (proxy.t < 1) requestAnimationFrame(step);
-  };
-  step();
-  await new Promise((r) => setTimeout(r, 700));
+  await new Promise((r) => setTimeout(r, 450));
   switching.value = false;
 }
 
@@ -408,6 +406,10 @@ const NODE_LABEL: Record<string, string> = {
         <AvPartsTree :parts="partTree" :selected-id="selectedPartId" @select="selectPart" />
       </div>
       <AvInspector v-if="inspectorRows.length" title="Component Inspector" :rows="inspectorRows" />
+      <div v-if="structureDesc" class="struct-desc">
+        <b>结构说明</b>
+        <p>{{ structureDesc }}</p>
+      </div>
     </div>
 
     <!-- LEGENDS：知识链（DOM 层，数据 @atl/shared DomainGraph 同源） -->
@@ -538,6 +540,13 @@ const NODE_LABEL: Record<string, string> = {
 }
 .legenddock { bottom: 84px; left: 50%; transform: translateX(-50%); width: min(720px, 94vw); max-height: 62vh; overflow: auto; display: flex; flex-direction: column; gap: 8px; padding: 14px 18px; border-radius: 16px; border: 1px solid rgba(167,139,250,0.3); background: rgba(20,15,30,0.75); backdrop-filter: blur(14px); }
 .legend-note { font-size: 12px; color: var(--av-text-secondary, #94a3b8); }
+.struct-desc {
+  padding: 12px 14px; border-radius: 12px; font-size: 12px; line-height: 1.7;
+  border: 1px solid rgba(148, 163, 184, 0.18); background: rgba(13, 17, 23, 0.72);
+  color: var(--av-text-secondary, #94a3b8);
+}
+.struct-desc b { color: var(--av-text-primary, #f1f5f9); }
+.struct-desc p { margin: 6px 0 0; }
 .fatal {
   position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 50;
   display: flex; flex-direction: column; gap: 8px; max-width: 560px; padding: 20px 26px;

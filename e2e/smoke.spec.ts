@@ -117,3 +117,32 @@ test.describe("DeLorean 知识图谱", () => {
     expect(errors).toEqual([]);
   });
 });
+
+test.describe("AUTOVERSE 产品（THE NEXUS + 三空间）", () => {
+  test("NEXUS 分类入口 + 传送 SUPERCAR 铭牌 + ENGINEERING 零件树/检查器", async ({ page }) => {
+    const errors = trackErrors(page);
+    await page.goto("http://localhost:5181/");
+    await expect(page.getByRole("heading", { name: "AUTOVERSE" })).toBeVisible();
+
+    // NEXUS 分类入口：FICTION → 面板 9 实体
+    await page.locator(".layer-quick").getByText("FICTION").click();
+    await expect(page.getByText(/FICTION 视图 · 9 实体/)).toBeVisible();
+
+    // 传送 SUPERCAR：信息铭牌 SIMULATED 诚实标注
+    // （IAB/受限环境定时器节流：传送全程 ~1.5s，各步宽容等待）
+    await page.locator(".dock-btn", { hasText: "SUPERCAR" }).click();
+    await page.waitForTimeout(2000);
+    await expect(page.locator(".supercar-plaque")).toContainText("SIMULATED");
+    await expect(page.locator(".supercar-plaque")).toContainText("程序化几何");
+    await expect(page.locator(".matdock .dock-btn", { hasText: "车漆" })).toBeVisible();
+
+    // ENGINEERING：零件树选车轮 FL → 检查器 + 结构说明
+    await page.locator(".dock-btn", { hasText: "ENGINEERING" }).click();
+    await page.waitForTimeout(2000);
+    await expect(page.getByText("SIMULATED / PROCEDURAL MODEL")).toBeVisible();
+    await page.locator(".av-tree__item", { hasText: "车轮 FL" }).click();
+    await expect(page.locator(".av-insp")).toContainText("wheel-FL");
+    await expect(page.locator(".struct-desc")).toContainText("车轮总成");
+    expect(errors).toEqual([]);
+  });
+});

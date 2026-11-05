@@ -45,6 +45,7 @@ jobs:
           pnpm --filter @atl/proto-automotive-studio build
           pnpm --filter @atl/proto-design-playground build
           pnpm --filter @atl/proto-delorean-showcase build
+          pnpm --filter @atl/autoverse-product build
       - name: Install Chromium
         run: pnpm exec playwright install --with-deps chromium
       - name: E2E Smoke

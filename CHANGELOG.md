@@ -95,6 +95,14 @@
 ## [Evolution-2 二十六轮] 2026-11-05 — E2E 补人物实体与 REALITY 过滤守卫
 ### Changed
 - DeLorean 知识图谱用例扩展：搜索 Giugiaro→链根断言 + byLayer REALITY 8 实体断言——二十五轮实体铺量即时纳入 E2E 守卫（5/5 通过）
+## [PHASE 3 R5] 2026-11-06 — 结构说明文案 + E2E 6/6（产品全流程守卫）
+### Added
+- **ENGINEERING 结构说明**：PART_DESCRIPTIONS（body/cabin 静态 + wheel/hub 动态注册）+ partDescription() 函数导出 + struct-desc 面板（SIMULATED 视角部件科普）
+- **E2E 5→6**：产品全流程用例（NEXUS 分类入口 FICTION 9 实体 → 传送 SUPERCAR 铭牌 SIMULATED → ENGINEERING 零件树选车轮 FL → 检查器 + 结构说明 + 零 console 错误）；webServer 5181 + CI 显式构建 product
+### Fixed
+- **F24**：传送白闪 rAF 链在 IAB 节流下永不 resolve（switching 卡死、场景不切换）→ CSS transition + setTimeout 驱动，镜头跳变藏在白闪峰值后
+- **F25**：PART_DESCRIPTIONS 跨模块可变对象直引在 rolldown 下声明被改名而使用未重写（ReferenceError）→ 改 partDescription() 函数导出
+- **F26**（第三次同族）：App.vue 用 partDescription 但 import 未更新——**E2E 是唯一自动防线**，已验证三次抓出同族缺陷
 ## [PHASE 3 R4] 2026-11-06 — 传送白闪 + 分类快速入口 + 性能档位
 ### Added（product/autoverse）
 - **传送白闪节奏**：遮罩 sin 曲线 0→1→0，中点执行场景激活；镜头 easeInOutCubic（cinematic）

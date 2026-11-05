@@ -6,7 +6,7 @@
  * 全部复用 packages/three-runtime（严禁绕过）。
  */
 import * as THREE from "three";
-import { PAINT_PRESETS, colors } from "@atl/shared";
+import { PAINT_PRESETS } from "@atl/shared";
 import { makeWireframeHandle } from "@atl/three-runtime";
 
 export interface CarPart {
@@ -21,6 +21,12 @@ export interface LabCar {
   parts: Map<string, CarPart>;
   wheels: THREE.Mesh[];
 }
+
+/** 结构说明（PART 9.2）——SIMULATED 视角下的部件科普 */
+const PART_DESCRIPTIONS: Record<string, string> = {
+  body: "承载式车身壳体：主要结构与外观件。真实拆解模型中会区分为前/中/后段与覆盖件。",
+  cabin: "座舱/风挡总成：本示意以单玻璃舱代表内饰+玻璃，独立拆解模型应有座椅、仪表、风挡分件。",
+};
 
 export function buildLabCar(): LabCar {
   const root = new THREE.Group();
@@ -67,11 +73,14 @@ export function buildLabCar(): LabCar {
     wheel.rotation.x = Math.PI / 2;
     wheel.position.set(x, 0.42, z);
     add(`wheel-${tag}`, wheel, [x, 0, z]);
+    PART_DESCRIPTIONS[`wheel-${tag}`] =
+      `车轮总成 ${tag}：轮胎+轮辋+制动盘。独立拆解模型中轮胎/轮辋/卡钳分件。`;
     wheels.push(wheel);
     const hub = new THREE.Mesh(hubGeo, hubMat);
     hub.rotation.x = Math.PI / 2;
     hub.position.set(x, 0.42, z);
     add(`hub-${tag}`, hub, [x, 0, z]);
+    PART_DESCRIPTIONS[`hub-${tag}`] = `轮毂/轴承 ${tag}：旋转副演示件（机械动画目标）。`;
   }
   return { root, parts, wheels };
 }
@@ -158,7 +167,6 @@ export function buildLegendsStars(): {
   });
   const stars = new THREE.Points(geo, mat);
   group.add(stars);
-  void colors;
   return {
     group,
     onFrame: (d: number) => (stars.rotation.y += d * 0.03),
@@ -170,3 +178,8 @@ export function buildLegendsStars(): {
 }
 
 export { makeWireframeHandle };
+
+/** 部件结构说明（函数导出——跨模块可变对象直引在 rolldown 下有改名边界问题，F23） */
+export function partDescription(id: string): string {
+  return PART_DESCRIPTIONS[id] ?? "（该部件暂无结构说明）";
+}
