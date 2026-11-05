@@ -25,7 +25,7 @@ jobs:
       - name: Unit Tests
         run: pnpm run test
       - name: Build All
-        run: pnpm run --if-present build:all || pnpm -r --filter './prototypes/**' build
+        run: pnpm run build:all
 
   e2e:
     runs-on: ubuntu-latest
@@ -44,6 +44,7 @@ jobs:
           pnpm --filter @atl/proto-vue-three build
           pnpm --filter @atl/proto-automotive-studio build
           pnpm --filter @atl/proto-design-playground build
+          pnpm --filter @atl/proto-delorean-showcase build
       - name: Install Chromium
         run: pnpm exec playwright install --with-deps chromium
       - name: E2E Smoke
