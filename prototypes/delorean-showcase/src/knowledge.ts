@@ -130,6 +130,43 @@ export const NODES: KnowledgeNode[] = [
     source: "NBC 公开资料",
     blurb: "虚构智能车载：真实 Trans Am 基底（与 Batmobile 相反案例）。",
   },
+  // ---- 人物与技术实体（PART 10 实体清单：Person/Technology）----
+  {
+    id: "john-delorean",
+    label: "John Zachary DeLorean",
+    kind: "person",
+    layer: "REALITY",
+    certainty: "VERIFIED",
+    source: "公开传记资料",
+    blurb: "GM 传奇高管→创立 DMC：DMC-12 背后的企业家故事（1975 创公司）。",
+  },
+  {
+    id: "giugiaro",
+    label: "Giorgetto Giugiaro",
+    kind: "person",
+    layer: "REALITY",
+    certainty: "VERIFIED",
+    source: "Italdesign 公开资料",
+    blurb: "DMC-12 车身设计者（Italdesign）：切角几何语言出自其手。",
+  },
+  {
+    id: "prv-v6",
+    label: "PRV V6 发动机",
+    kind: "technology",
+    layer: "REALITY",
+    certainty: "VERIFIED",
+    source: "公开技术资料",
+    blurb: "Peugeot-Renault-Volvo 联合开发：DMC-12 后置动力（2.85L SOHC V6）。",
+  },
+  {
+    id: "gullwing-lineage",
+    label: "鸥翼门谱系（300SL 前例）",
+    kind: "technology",
+    layer: "REALITY",
+    certainty: "RESEARCHED",
+    source: "公开汽车史资料",
+    blurb: "1954 Mercedes 300SL 首创鸥翼铰链：DMC-12 是大众化再诠释。",
+  },
 ];
 
 const EDGES: Array<Pick<KnowledgeEdge, "from" | "to" | "rel">> = [
@@ -146,6 +183,10 @@ const EDGES: Array<Pick<KnowledgeEdge, "from" | "to" | "rel">> = [
   { from: "batman-franchise", to: "batmobile", rel: "标志载具" },
   { from: "knight-rider", to: "film-culture", rel: "属于" },
   { from: "knight-rider", to: "kitt", rel: "标志载具" },
+  { from: "dmc12", to: "john-delorean", rel: "由创立品牌的人物推动" },
+  { from: "dmc12", to: "giugiaro", rel: "外观设计" },
+  { from: "dmc12", to: "prv-v6", rel: "动力单元" },
+  { from: "gullwing", to: "gullwing-lineage", rel: "谱系前例" },
 ];
 
 export const GRAPH = new DomainGraph().addAll(NODES).relateAll(
