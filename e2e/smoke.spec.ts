@@ -105,7 +105,9 @@ test.describe("DeLorean 知识图谱", () => {
 
     // 人物/技术实体（PART 10 清单）：搜索 Giugiaro → 跳转链根
     await page.getByLabel("知识图谱搜索").fill("Giugiaro");
-    await expect(page.locator(".search-hits .chain-node", { hasText: "Giorgetto Giugiaro" })).toBeVisible();
+    await expect(
+      page.locator(".search-hits .chain-node", { hasText: "Giorgetto Giugiaro" }),
+    ).toBeVisible();
     await page.locator(".search-hits .chain-node", { hasText: "Giugiaro" }).click();
     await expect(page.locator(".chain-root strong")).toHaveText("Giorgetto Giugiaro");
 
