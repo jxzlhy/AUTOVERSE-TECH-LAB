@@ -16,11 +16,14 @@ export default defineConfig({
   use: {
     baseURL: "http://localhost",
     trace: "retain-on-failure",
-    // F17：本机 CDN 封锁导致 1.64 需要的 chromium-1248 不可下载；
-    // 复用缓存中已有的 chromium-1228 完整浏览器（executablePath 绕过版本校验）。
-    launchOptions: {
-      executablePath: `${process.env.HOME}/Library/Caches/ms-playwright/chromium-1228/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing`,
-    },
+    // F17/GATE-A 跨平台处理：仅当 macOS 本机缓存存在 chromium-1228（CDN 封锁期
+    // 兜底）时才覆写 executablePath；其他平台（CI Ubuntu）与文件缺失时一律使用
+    // Playwright 自管浏览器（由 `playwright install chromium` 提供）。
+    launchOptions: (() => {
+      if (process.platform !== "darwin") return {};
+      const cached = `${process.env.HOME}/Library/Caches/ms-playwright/chromium-1228/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing`;
+      return existsSync(cached) ? { executablePath: cached } : {};
+    })(),
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer: [
