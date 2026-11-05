@@ -92,6 +92,9 @@
 ### Added
 - 知识图谱 **17 节点/17 边**：新增 John Zachary DeLorean（person）/ Giorgetto Giugiaro（person，Italdesign）/ PRV V6（technology）/ 鸥翼门谱系（300SL 前例，RESEARCHED）
 - 浏览器实测：搜索 Giugiaro→跳转链根→反向关系（外观设计）+ 二跳 6 节点（含 John DeLorean/PRV V6）；DMC-12 枢纽度数 4→7
+## [Evolution-2 二十六轮] 2026-11-05 — E2E 补人物实体与 REALITY 过滤守卫
+### Changed
+- DeLorean 知识图谱用例扩展：搜索 Giugiaro→链根断言 + byLayer REALITY 8 实体断言——二十五轮实体铺量即时纳入 E2E 守卫（5/5 通过）
 ## [Evolution-2 七轮] 2026-11-05 — Blender V 级落地 + MUSEUM 主题
 ### Added
 - **Blender 4.x 本机安装（Homebrew）→ tools/blender/inspect_asset.py V 级验证**：无头 ToyCar.glb 检查 4 mesh/108,936 tris（与 gltf-transform 双检一致）/part_id 告警；报告 blender-inspect-ToyCar.json

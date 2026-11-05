@@ -102,6 +102,16 @@ test.describe("DeLorean 知识图谱", () => {
     await page.locator(".hub-chip", { hasText: "DeLorean DMC-12" }).click();
     await expect(page.locator(".chain-root strong")).toHaveText("DeLorean DMC-12");
     await expect(page.locator(".twohop-node").first()).toBeVisible();
+
+    // 人物/技术实体（PART 10 清单）：搜索 Giugiaro → 跳转链根
+    await page.getByLabel("知识图谱搜索").fill("Giugiaro");
+    await expect(page.locator(".search-hits .chain-node", { hasText: "Giorgetto Giugiaro" })).toBeVisible();
+    await page.locator(".search-hits .chain-node", { hasText: "Giugiaro" }).click();
+    await expect(page.locator(".chain-root strong")).toHaveText("Giorgetto Giugiaro");
+
+    // byLayer REALITY 过滤：8 实体（DMC-12/品牌/鸥翼/不锈钢/人物×2/技术×2）
+    await page.locator(".layer-row").getByText("REALITY").click();
+    await expect(page.getByText(/8 实体/)).toBeVisible();
     expect(errors).toEqual([]);
   });
 });
