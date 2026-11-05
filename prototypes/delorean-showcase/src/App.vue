@@ -17,6 +17,11 @@ const hubs = computed(() => GRAPH.hubs(3));
 // 全局搜索（DomainGraph.search）：跨节点检索，结果点击跳转
 const searchQ = ref("");
 const searchHits = computed(() => (searchQ.value.trim() ? GRAPH.search(searchQ.value) : []));
+// byLayer 三分过滤：REALITY/FICTION/FUTURE 数据层分类视图（总纲 §3 展品分类落点）
+const layerFilter = ref<"ALL" | "REALITY" | "FICTION" | "FUTURE">("ALL");
+const layerEntities = computed(() =>
+  layerFilter.value === "ALL" ? [] : GRAPH.byLayer(layerFilter.value),
+);
 // 二跳可达：traverse(2) 去掉链根与直接邻居后的"远端网络"（PART 2.5 文明网络承诺）
 const twoHop = computed(() => {
   const direct = new Set(chain.value.map((c) => c.node.id));
@@ -108,6 +113,27 @@ const exhibits: Exhibit[] = [
       </template>
     </AvTabs>
 
+    <AvCard title="知识分类视图（byLayer 三分）" tag="KNOWLEDGE">
+      <div class="layer-row">
+        <button
+          v-for="opt in ['ALL', 'REALITY', 'FICTION', 'FUTURE'] as const"
+          :key="opt"
+          class="chip"
+          :class="{ active: layerFilter === opt }"
+          @click="layerFilter = opt"
+        >
+          {{ opt === 'ALL' ? '全部' : opt }}
+        </button>
+        <span class="layer-count">{{ layerFilter === 'ALL' ? GRAPH.size : layerEntities.length }} 实体</span>
+      </div>
+      <div v-if="layerFilter !== 'ALL'" class="layer-grid">
+        <button v-for="e in layerEntities" :key="e.id" class="chain-node" @click="chainRoot = e">
+          {{ e.label }}
+          <AvBadge :kind="e.layer === 'FICTION' ? 'FICTION' : e.layer === 'FUTURE' ? 'CONCEPT' : 'REAL'" />
+        </button>
+      </div>
+    </AvCard>
+
     <AvCard title="知识关系链（探索入口示例）" tag="KNOWLEDGE">
       <div class="search-row">
         <input
@@ -189,6 +215,10 @@ const exhibits: Exhibit[] = [
 .points { margin: 0; padding-left: 18px; }
 .points li { margin: 4px 0; }
 .meta { font-size: 12px; color: var(--av-text-muted, #64748b); }
+.layer-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.layer-count { font-family: var(--av-font-mono); font-size: 10px; color: var(--av-text-muted, #64748b); }
+.layer-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.layer-grid .chain-node { display: inline-flex; align-items: center; gap: 6px; }
 .search-row { margin-bottom: 12px; }
 .search-box {
   width: 100%; padding: 8px 12px; border-radius: 999px;
