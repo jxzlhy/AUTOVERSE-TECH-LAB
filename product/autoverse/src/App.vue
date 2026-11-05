@@ -6,7 +6,14 @@ import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import * as THREE from "three";
 import { colors } from "@atl/shared";
 import { AvBadge } from "@atl/design-system";
+import {
+  SceneManager,
+  XRayController,
+  makeWireframeHandle,
+} from "@atl/three-runtime";
+import { createAutomaterial, MATERIAL_PRESET_INFO, type AutomotiveMaterialPreset } from "@atl/three-runtime";
 import { buildNexus, type NexusRefs } from "./nexus";
+import { applyExplode, buildLabCar, buildShowCar, buildLegendsStars, makeGround, type LabCar, type ShowCar } from "./spaces";
 
 const canvasRef = ref<HTMLCanvasElement | null>(null);
 const overlayRef = ref<HTMLDivElement | null>(null);
@@ -30,6 +37,13 @@ let renderer: THREE.WebGLRenderer;
 let scene: THREE.Scene;
 let camera: THREE.PerspectiveCamera;
 let nexus: NexusRefs;
+let sceneManager: SceneManager;
+let showCar: ShowCar;
+let labCar: LabCar;
+let labXray: XRayController;
+let labWire: ReturnType<typeof makeWireframeHandle>;
+let labExplode = { t: 0 };
+let legendsStars: ReturnType<typeof import("./spaces").buildLegendsStars>;
 let clock: THREE.Clock;
 let elapsed = 0;
 let raf = 0;
@@ -50,6 +64,43 @@ function onLost(e: Event): void {
 }
 function onRestored(): void {
   fatal.value = null;
+}
+
+const matPreset = ref<"paint" | AutomotiveMaterialPreset>("paint");
+let presetMaterial: THREE.Material | null = null;
+function chooseMaterial(preset: "paint" | AutomotiveMaterialPreset): void {
+  const body = showCar?.root.children[0] as THREE.Mesh | undefined;
+  if (!body) return;
+  presetMaterial?.dispose();
+  presetMaterial = null;
+  matPreset.value = preset;
+  if (preset === "paint") {
+    body.material = showCar.paint;
+    return;
+  }
+  presetMaterial = createAutomaterial(preset, 0x8fa3b8);
+  body.material = presetMaterial;
+}
+const matPresets = Object.values(MATERIAL_PRESET_INFO);
+
+const explodeT = ref(0);
+const xrayOn = ref(false);
+const wireOn = ref(false);
+const spinning = ref(true);
+function setExplode(t: number): void {
+  explodeT.value = t;
+  labExplode.t = t;
+  if (labCar) applyExplode(labCar, t);
+}
+function toggleXray(v: boolean): void {
+  xrayOn.value = v;
+  if (!labCar) return;
+  if (v) labXray.apply(labCar.root);
+  else labXray.restore(labCar.root);
+}
+function toggleWire(v: boolean): void {
+  wireOn.value = v;
+  labWire?.set(v);
 }
 
 onMounted(async () => {
@@ -87,6 +138,51 @@ async function init(): Promise<void> {
   nexus = buildNexus();
   scene.add(nexus.group);
 
+  // SceneManager（两阶段激活）：nexus + 三大体验场景
+  sceneManager = new SceneManager(scene);
+  sceneManager.register({ id: "nexus", object3D: nexus.group });
+
+  // SUPERCAR WORLD：展示车 + 材质预设
+  showCar = buildShowCar();
+  const supercarGroup = new THREE.Group();
+  supercarGroup.add(makeGround(colors.bgDeep));
+  supercarGroup.add(showCar.root);
+  sceneManager.register({
+    id: "supercar",
+    object3D: supercarGroup,
+    onEnter: () => {
+      camera.position.set(6.2, 2.8, 7);
+      camera.lookAt(0, 0.8, 0);
+    },
+    onFrame: ({ delta }) => {
+      showCar.root.rotation.y += delta * 0.22;
+    },
+  });
+
+  // ENGINEERING LAB：程序化示意车（SIMULATED）+ 爆炸/X-Ray/Wireframe
+  labCar = buildLabCar();
+  const labGroup = new THREE.Group();
+  labGroup.add(makeGround("#10161f"));
+  labGroup.add(labCar.root);
+  labXray = new XRayController();
+  labWire = makeWireframeHandle(labCar.root);
+  sceneManager.register({
+    id: "engineering",
+    object3D: labGroup,
+    onEnter: () => {
+      camera.position.set(7, 3.6, 7);
+      camera.lookAt(0, 0.8, 0);
+      applyExplode(labCar, labExplode.t);
+    },
+  });
+
+  // LEGENDS UNIVERSE：紫色星域背景（知识链为 DOM 层）
+  legendsStars = buildLegendsStars();
+  sceneManager.register({ id: "legends", object3D: legendsStars.group, onFrame: ({ delta }) => legendsStars.onFrame(delta) });
+
+  // 通过 SceneManager 激活初始场景（currentId 追踪，切换时才能正确移除）
+  await sceneManager.activate("nexus");
+
   // 预置体验标记：已建成的三个空间节点高亮为"可进入"（REALITY/FICTION 已规划内容）
   canvas.addEventListener("webglcontextlost", onLost);
   canvas.addEventListener("webglcontextrestored", onRestored);
@@ -107,6 +203,10 @@ async function init(): Promise<void> {
     const dt = Math.min(clock.getDelta(), 0.1);
     elapsed += dt;
     nexus.onFrame(dt, elapsed);
+    sceneManager.update(dt);
+    if (currentSpace.value === "engineering" && spinning.value) {
+      for (const w of labCar?.wheels ?? []) w.rotation.z += dt * 6;
+    }
     renderer.render(scene, camera);
     perf.value = { fps: perf.value.fps, draws: renderer.info.render.calls, tris: renderer.info.render.triangles };
     updateProjection(canvas.clientWidth, canvas.clientHeight);
@@ -122,8 +222,14 @@ async function travel(id: SpaceId): Promise<void> {
   if (switching.value || id === currentSpace.value || !overlayRef.value) return;
   if (id !== "nexus" && !["supercar", "engineering", "legends"].includes(id)) return; // 规划中空间暂不可进入
   switching.value = true;
+  const prev = currentSpace.value;
   currentSpace.value = id;
   visited.value.add(id);
+  await sceneManager.activate(id, { disposeCurrent: false }).catch((err) => {
+    // 两阶段失败保当前场景（PART 2A 契约）
+    currentSpace.value = prev;
+    fatal.value = `空间切换失败：${String(err)}`;
+  });
   // 传送演出：镜头推进 + 白闪回淡（NEXUS→空间的沉浸式切换）
   const startPos = camera.position.clone();
   const endPos = id === "nexus" ? new THREE.Vector3(0, 5.2, 13.5) : new THREE.Vector3(0, 3.2, 9);
@@ -147,6 +253,9 @@ onBeforeUnmount(() => {
   cancelAnimationFrame(raf);
   resizeObs?.disconnect();
   nexus?.dispose();
+  labXray?.dispose();
+  labWire?.dispose();
+  legendsStars?.dispose();
   renderer?.dispose();
 });
 
@@ -193,6 +302,40 @@ const NODE_LABEL: Record<string, string> = {
         {{ NODE_LABEL[n.id] ?? n.id }}
       </button>
     </template>
+
+    <!-- SUPERCAR：材质预设 -->
+    <div v-if="currentSpace === 'supercar'" class="hud matdock">
+      <button
+        v-for="mp in [{ id: 'paint', label: '车漆' }, ...matPresets.map((m) => ({ id: m.id, label: m.label }))]"
+        :key="mp.id"
+        class="dock-btn small"
+        :class="{ active: matPreset === mp.id }"
+        @click="chooseMaterial(mp.id as 'paint' | AutomotiveMaterialPreset)"
+      >
+        {{ mp.label }}
+      </button>
+    </div>
+
+    <!-- ENGINEERING：交互面板（SIMULATED 标注） -->
+    <div v-if="currentSpace === 'engineering'" class="hud engdock">
+      <span class="sim-tag">SIMULATED / PROCEDURAL MODEL</span>
+      <div class="eng-row">
+        <span class="elabel">拆解</span>
+        <input type="range" min="0" max="1" step="0.01" :value="explodeT" style="flex:1;accent-color:#22d3ee" aria-label="爆炸拆解" @input="setExplode(Number(($event.target as HTMLInputElement).value))" />
+        <button class="dock-btn small" @click="setExplode(explodeT > 0.5 ? 0 : 1)">{{ explodeT > 0.5 ? "复原" : "爆炸" }}</button>
+      </div>
+      <div class="eng-row toggles">
+        <button class="dock-btn small" :class="{ active: xrayOn }" @click="toggleXray(!xrayOn)">X-RAY</button>
+        <button class="dock-btn small" :class="{ active: wireOn }" @click="toggleWire(!wireOn)">WIRE</button>
+        <button class="dock-btn small" :class="{ active: spinning }" @click="spinning = !spinning">轮转</button>
+      </div>
+    </div>
+
+    <!-- LEGENDS：知识链（DOM 层，数据 @atl/shared DomainGraph 同源） -->
+    <div v-if="currentSpace === 'legends'" class="hud legenddock">
+      <span class="sim-tag">LEGENDS UNIVERSE · 知识链</span>
+      <div class="legend-note">DeLorean Time Machine → DMC-12 → 鸥翼门 → 不锈钢车身（详见专题 :5178，此为产品内嵌入口）</div>
+    </div>
 
     <!-- 当前空间信息铭牌 -->
     <aside class="hud plaque">
@@ -260,6 +403,20 @@ const NODE_LABEL: Record<string, string> = {
 .dock-btn.disabled { opacity: 0.55; cursor: not-allowed; }
 .dock-btn:focus-visible { outline: 2px solid var(--av-nexus-500, #22d3ee); outline-offset: 2px; }
 .foot { bottom: 14px; right: 20px; display: flex; gap: 14px; font-family: var(--av-font-mono); font-size: 11px; color: var(--av-text-secondary, #94a3b8); pointer-events: none; }
+.matdock { bottom: 84px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; max-width: 92vw; }
+.dock-btn.small { padding: 6px 12px; font-size: 11px; }
+.dock-btn.small.active { color: var(--av-nexus-500, #22d3ee); border-color: var(--av-nexus-500, #22d3ee); }
+.engdock { bottom: 84px; left: 20px; width: 320px; display: flex; flex-direction: column; gap: 10px; padding: 14px; border-radius: 16px; border: 1px solid rgba(148,163,184,0.18); background: rgba(13,17,23,0.72); backdrop-filter: blur(14px); }
+.eng-row { display: flex; align-items: center; gap: 8px; }
+.toggles { flex-wrap: wrap; }
+.elabel { font-family: var(--av-font-mono); font-size: 10px; color: var(--av-text-secondary, #94a3b8); }
+.sim-tag {
+  display: inline-block; align-self: flex-start; padding: 3px 10px; border-radius: 999px;
+  border: 1px solid rgba(251,191,36,0.4); background: rgba(251,191,36,0.1);
+  color: #fbbf24; font-family: var(--av-font-mono); font-size: 9px; letter-spacing: 0.12em;
+}
+.legenddock { bottom: 84px; left: 50%; transform: translateX(-50%); width: min(640px, 92vw); display: flex; flex-direction: column; gap: 8px; padding: 14px 18px; border-radius: 16px; border: 1px solid rgba(167,139,250,0.3); background: rgba(20,15,30,0.75); backdrop-filter: blur(14px); }
+.legend-note { font-size: 12px; color: var(--av-text-secondary, #94a3b8); }
 .fatal {
   position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 50;
   display: flex; flex-direction: column; gap: 8px; max-width: 560px; padding: 20px 26px;

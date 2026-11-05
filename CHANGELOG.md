@@ -95,6 +95,18 @@
 ## [Evolution-2 二十六轮] 2026-11-05 — E2E 补人物实体与 REALITY 过滤守卫
 ### Changed
 - DeLorean 知识图谱用例扩展：搜索 Giugiaro→链根断言 + byLayer REALITY 8 实体断言——二十五轮实体铺量即时纳入 E2E 守卫（5/5 通过）
+## [PHASE 3 R1] 2026-11-06 — AUTOVERSE 正式产品第一轮
+### Added（product/autoverse :5181，方案 A 独立 Product App）
+- **THE NEXUS 主空间**：全息核心（Hologram 入库 shader-library）+ 六空间轨道节点（可点击传送标签/3D 投影）+ 星环 + 数字网格 + 探索进度
+- **SUPERCAR WORLD**：展示车 + 十一材质预设行 + 转台
+- **ENGINEERING LAB**：程序化示意车（SIMULATED/PROCEDURAL MODEL 徽章）+ 爆炸滑杆/一键复原 + X-RAY + WIRE + 轮转
+- **LEGENDS UNIVERSE**：紫色星域 + 知识链入口（DomainGraph 同源数据）
+- 统一 SceneManager（两阶段激活）+ 品牌层（AUTOVERSE/探索进度/空间导航 dock）+ webglcontext 恢复
+### Fixed（调试过程留证）
+- 基准 K 场景（纹理阶梯）；Product 首屏三连修：Record.map（F21）/buildLegendsStars 导入/nexus 场景 currentId 追踪
+### Verified
+- 浏览器实测：NEXUS 全要素 / SUPERCAR 材质行 / ENGINEERING X-Ray+完全爆炸 / LEGENDS 紫星域独立渲染（截图 6 张）
+- 门禁：lint 0 / typecheck 0（+product）/ vitest 31+2 / build 10 应用全绿
 ## [Evolution-2 七轮] 2026-11-05 — Blender V 级落地 + MUSEUM 主题
 ### Added
 - **Blender 4.x 本机安装（Homebrew）→ tools/blender/inspect_asset.py V 级验证**：无头 ToyCar.glb 检查 4 mesh/108,936 tris（与 gltf-transform 双检一致）/part_id 告警；报告 blender-inspect-ToyCar.json

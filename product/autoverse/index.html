@@ -7,7 +7,14 @@
     <title>AUTOVERSE ｜ 汽车文明数字宇宙</title>
   </head>
   <body style="margin:0;background:#05070D;overflow:hidden">
-    <div id="app"></div>
+    <script>
+    window.__bootErr = [];
+    window.addEventListener("error", function (e) { window.__bootErr.push(String(e.message) + " @" + (e.filename || "").slice(-40) + ":" + e.lineno); });
+    window.addEventListener("unhandledrejection", function (e) { window.__bootErr.push("REJ:" + String(e.reason && e.reason.message || e.reason)); });
+    var _e = console.error.bind(console);
+    console.error = function () { window.__bootErr.push("CE:" + Array.from(arguments).map(String).join(" ").slice(0, 300)); _e.apply(console, arguments); };
+  </script>
+  <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
