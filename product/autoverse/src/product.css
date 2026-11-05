@@ -1,0 +1,12 @@
+/* AUTOVERSE 产品层样式（Design Tokens 之上；SPATIAL 语法基线） */
+* { box-sizing: border-box; }
+html, body, #app { height: 100%; }
+body {
+  background: var(--av-bg-void, #05070d);
+  color: var(--av-text-primary, #f1f5f9);
+  font-family: var(--av-font-body, system-ui, -apple-system, "PingFang SC", sans-serif);
+  overflow: hidden;
+}
+.av-canvas { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; }
+.av-hud { position: absolute; z-index: 10; }
+.av-kicker { font-size: 10px; letter-spacing: 0.2em; color: var(--av-text-secondary, #94a3b8); }

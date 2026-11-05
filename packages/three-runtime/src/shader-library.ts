@@ -24,6 +24,40 @@ export interface ShaderHandle {
 }
 
 /**
+ * Hologram 全息：Fresnel + 扫描线 + 微闪（THE NEXUS 核心/全息展台）。
+ * 性能：1×pow + 1×sin，可忽略。
+ */
+export function makeHologramMaterial(colorHex: number): ShaderHandle {
+  const material = new THREE.ShaderMaterial({
+    vertexShader: COMMON_VERT,
+    fragmentShader: /* glsl */ `
+      uniform vec3 uColor;
+      uniform float uTime;
+      varying vec3 vNormalW;
+      varying vec3 vPosW;
+      void main() {
+        vec3 viewDir = normalize(cameraPosition - vPosW);
+        float fresnel = pow(1.0 - abs(dot(normalize(vNormalW), viewDir)), 2.2);
+        float scan = 0.5 + 0.5 * sin(vPosW.y * 42.0 - uTime * 3.0);
+        float flicker = 0.92 + 0.08 * sin(uTime * 23.0);
+        float a = (fresnel * 0.85 + scan * 0.12) * flicker;
+        gl_FragColor = vec4(uColor * (0.6 + fresnel), a);
+      }
+    `,
+    uniforms: { uColor: { value: new THREE.Color(colorHex) }, uTime: { value: 0 } },
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+    side: THREE.DoubleSide,
+  });
+  return {
+    material,
+    tick: (t) => (material.uniforms.uTime.value = t),
+    dispose: () => material.dispose(),
+  };
+}
+
+/**
  * X-Ray 透视外壳：Fresnel 边缘发光 + 低不透明度，用于"外壳隐藏/透视模式"（ENGINEERING UI）。
  * 性能：每像素 1 次 fresnel，成本低；与 depthWrite:false 搭配避免排序问题。
  */

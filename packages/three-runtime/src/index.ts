@@ -24,6 +24,7 @@ export {
 } from "./shader-library";
 export { XRayController, SectionController, type SectionRange } from "./engineering";
 export {
+  makeHologramMaterial,
   makeScanMaterial,
   makeFresnelMaterial,
   makeDigitalGridMaterial,
