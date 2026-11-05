@@ -15,6 +15,7 @@ import {
   AvSelect,
   AvTabs,
   AvToast,
+  AvToggle,
   AvTooltip,
 } from "@atl/design-system";
 

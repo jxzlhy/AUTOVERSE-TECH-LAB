@@ -65,3 +65,43 @@ test.describe("Automotive Studio 旗舰", () => {
     expect(errors).toEqual([]);
   });
 });
+
+test.describe("Playground v0.2 扩展", () => {
+  test("MUSEUM 浅色主题切换 + Scroll Narrative 渲染", async ({ page }) => {
+    const errors = trackErrors(page);
+    await page.goto("http://localhost:5175/");
+    await expect(page.getByRole("heading", { name: /CORE UI Playground/ })).toBeVisible();
+    // 主题切换（AvToggle role=switch）
+    await page.getByRole("switch", { name: /MUSEUM/ }).click();
+    await expect(page.locator("main.page.museum")).toHaveCount(1);
+    // 切回深色
+    await page.getByRole("switch", { name: /MUSEUM/ }).click();
+    await expect(page.locator("main.page.museum")).toHaveCount(0);
+    // Scroll Narrative 四步渲染
+    await expect(page.locator(".narr-step")).toHaveCount(4);
+    await expect(page.getByText("不锈钢传奇")).toBeVisible();
+    expect(errors).toEqual([]);
+  });
+});
+
+test.describe("DeLorean 知识图谱", () => {
+  test("搜索命中 + 枢纽跳转 + byLayer 过滤", async ({ page }) => {
+    const errors = trackErrors(page);
+    await page.goto("http://localhost:5178/");
+    await expect(page.getByRole("heading", { name: /BACK TO THE FUTURE/ })).toBeVisible();
+
+    // 全局搜索"蝙蝠" → Batman 系列/Batmobile
+    await page.getByLabel("知识图谱搜索").fill("蝙蝠");
+    await expect(page.locator(".search-hits .chain-node")).toHaveCount(2);
+
+    // byLayer 三分过滤：FICTION 9 实体
+    await page.locator(".layer-row").getByText("FICTION").click();
+    await expect(page.getByText(/9 实体/)).toBeVisible();
+
+    // 枢纽跳转：点 DeLorean DMC-12 → 链根切换 + 二跳区出现
+    await page.locator(".hub-chip", { hasText: "DeLorean DMC-12" }).click();
+    await expect(page.locator(".chain-root strong")).toHaveText("DeLorean DMC-12");
+    await expect(page.locator(".twohop-node").first()).toBeVisible();
+    expect(errors).toEqual([]);
+  });
+});
