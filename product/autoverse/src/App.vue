@@ -4,7 +4,7 @@
  */
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import * as THREE from "three";
-import { colors } from "@atl/shared";
+import { colors, PAINT_PRESETS } from "@atl/shared";
 import { AvBadge, AvInspector, AvPartsTree, type PartNode } from "@atl/design-system";
 import {
   SceneManager,
@@ -81,6 +81,19 @@ function onRestored(): void {
 }
 
 const matPreset = ref<"paint" | AutomotiveMaterialPreset>("paint");
+const paintId = ref("nexus");
+function choosePaint(id: string): void {
+  paintId.value = id;
+  const hex = PAINT_PRESETS.find((p) => p.id === id)?.color ?? "#22D3EE";
+  const body = showCar?.root.children[0] as THREE.Mesh | undefined;
+  if (matPreset.value === "paint" && body && "color" in (body.material as THREE.MeshPhysicalMaterial)) {
+    (body.material as THREE.MeshPhysicalMaterial).color?.set?.(hex);
+  } else {
+    chooseMaterial(matPreset.value);
+    const m = presetMaterial;
+    if (m && "color" in m) (m as THREE.MeshStandardMaterial).color?.set?.(hex);
+  }
+}
 let presetMaterial: THREE.Material | null = null;
 function chooseMaterial(preset: "paint" | AutomotiveMaterialPreset): void {
   const body = showCar?.root.children[0] as THREE.Mesh | undefined;
@@ -96,6 +109,16 @@ function chooseMaterial(preset: "paint" | AutomotiveMaterialPreset): void {
   body.material = presetMaterial;
 }
 const matPresets = Object.values(MATERIAL_PRESET_INFO);
+const currentPaintColor = computed(
+  () => PAINT_PRESETS.find((p) => p.id === paintId.value)?.color ?? PAINT_PRESETS[0].color,
+);
+const currentPaintLabel = computed(
+  () => PAINT_PRESETS.find((p) => p.id === paintId.value)?.label ?? PAINT_PRESETS[0].label,
+);
+const currentMaterialLabel = computed(() => {
+  if (matPreset.value === "paint") return "原厂车漆";
+  return MATERIAL_PRESET_INFO[matPreset.value as AutomotiveMaterialPreset]?.label ?? "—";
+});
 
 const explodeT = ref(0);
 const selectedPartId = ref<string | null>(null);
@@ -369,14 +392,27 @@ const NODE_LABEL: Record<string, string> = {
       <span class="pl-kicker">SHOWCASE ｜ <b style="color:#fbbf24">SIMULATED</b></span>
       <strong>AUTOVERSE GT-S（示意车型）</strong>
       <dl class="specs">
+        <div><dt>车漆</dt><dd class="paint-dd"><i class="paint-dot" :style="{ background: currentPaintColor }" />{{ currentPaintLabel }}</dd></div>
         <div><dt>车身</dt><dd>4.40 × 1.90 × 1.72 m</dd></div>
         <div><dt>动力</dt><dd>纯电双电机（示意）</dd></div>
-        <div><dt>材质</dt><dd>11 预设实时切换</dd></div>
+        <div><dt>当前材质</dt><dd>{{ currentMaterialLabel }}</dd></div>
         <div><dt>来源</dt><dd>程序化几何（非真实车型）</dd></div>
       </dl>
     </aside>
 
     <!-- SUPERCAR：材质预设 -->
+    <div v-if="currentSpace === 'supercar'" class="hud paintdock">
+      <button
+        v-for="p in PAINT_PRESETS"
+        :key="p.id"
+        class="dock-btn small"
+        :class="{ active: paintId === p.id }"
+        :style="{ borderColor: paintId === p.id ? p.color : undefined }"
+        @click="choosePaint(p.id)"
+      >
+        {{ p.label }}
+      </button>
+    </div>
     <div v-if="currentSpace === 'supercar'" class="hud matdock">
       <button
         v-for="mp in [{ id: 'paint', label: '车漆' }, ...matPresets.map((m) => ({ id: m.id, label: m.label }))]"
@@ -526,6 +562,9 @@ const NODE_LABEL: Record<string, string> = {
 .specs div { display: flex; justify-content: space-between; padding: 2px 0; }
 .specs dt { color: var(--av-text-muted, #64748b); font-size: 11px; }
 .specs dd { margin: 0; font-family: var(--av-font-mono); font-size: 11px; color: var(--av-text-primary, #f1f5f9); }
+.paint-dd { display: inline-flex; align-items: center; gap: 6px; }
+.paint-dot { width: 8px; height: 8px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.3); }
+.paintdock { bottom: 130px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; max-width: 92vw; }
 .matdock { bottom: 84px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; max-width: 92vw; }
 .dock-btn.small { padding: 6px 12px; font-size: 11px; }
 .dock-btn.small.active { color: var(--av-nexus-500, #22d3ee); border-color: var(--av-nexus-500, #22d3ee); }
